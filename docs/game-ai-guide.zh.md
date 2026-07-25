@@ -4,6 +4,13 @@
 
 > 下文每一种类型都有可直接运行的配套代码，位于 [`../samples`](../samples)。
 
+> 📖 **想要完整的“书籍版”？** 本页是简明指南。完整的图文教程书——含
+> **马力欧卡丁车与 GT 赛车 Sophy、Doom / F.E.A.R. / 彩虹六号 / Apex、
+> 文明 / 红色警戒 / 星际争霸** 等类型的深入剖析，以及 minimax、MCTS、GOAP、
+> 影响力图、练习与术语表——目前为英文版：
+> **[Game AI: From Pac-Man to GT Sophy](game-ai-book.en.md)**
+> （另有 [Word 文档](game-ai-book.docx)）。
+
 ---
 
 ## 目录
@@ -16,6 +23,9 @@
    - [3.3 追踪 / 追击敌人 —— 寻路（A\*）](#sec33)
    - [3.4 赛车 AI —— 路点、转向与橡皮筋难度](#sec34)
    - [3.5 其他经典技术（GOAP、效用 AI、MCTS、PCG）](#sec35)
+   - [3.6 射击（FPS）AI —— 从 Doom 到彩虹六号与 Apex](#sec36)
+   - [3.7 即时战略（RTS）AI —— 命令与征服 / 红色警戒](#sec37)
+   - [3.8 策略帝国（4X）AI —— 文明与“难度加成”](#sec38)
 4. [现代游戏 AI](#sec4)
    - [4.1 强化学习（RL）智能体](#sec41)
    - [4.2 生成式 AI 智能体（LLM 驱动）](#sec42)
@@ -96,6 +106,11 @@
 ▶ **示例：** [`samples/npc/npc_fsm.py`](../samples/npc/npc_fsm.py) —— 一个守卫
 仅凭感知和血量就在 巡逻 → 调查 → 追击 → 攻击 → 逃跑 → 巡逻 之间流转，另附一个
 用行为树实现“是否该攻击”的紧凑版本。
+
+▶ **示例：** [`samples/classic/pacman_ghosts.py`](../samples/classic/pacman_ghosts.py)
+—— 四个吃豆人幽灵，各自只有一条“目标格”规则（Blinky 直追、Pinky 抢前 4 格、
+Inky 借 Blinky 反射、Clyde 远追近逃），再加上 追逐 / 散开 模式计时器，在 ASCII
+迷宫里协同围猎——四条独立规则涌现出“团队”感。
 
 ---
 
@@ -195,6 +210,15 @@ RTS 单位指令。
 ▶ **示例：** [`samples/racing/racing_ai.py`](../samples/racing/racing_ai.py)
 —— 一个带 PID 转向和橡皮筋机制的路点跟随 AI，与一个匀速“玩家”比赛，并把差距保持得很小。
 
+▶ **示例：** [`samples/racing/mario_kart_items.py`](../samples/racing/mario_kart_items.py)
+—— 六辆卡丁车竞速，演示**按名次分配道具**（领先者拿香蕉 / 绿龟壳，落后者拿蘑菇 /
+无敌星 / 蓝壳）与橡皮筋速度：整个车队被“做局”挤成一团，正是街机赛车刻意追求的
+“有趣胜过公平”。
+
+▶ **示例：** [`samples/rl/sophy_racing_qlearn.py`](../samples/rl/sophy_racing_qlearn.py)
+—— **迷你版 Sophy**：一个**没有任何预设赛车线**的强化学习智能体，仅凭奖励学会一套
+速度曲线——弯前刹车、直道全油门——跑赢只会“全油门”结果撞车的朴素司机。
+
 ---
 
 ### 3.5 其他经典技术（GOAP、效用 AI、MCTS、PCG） <a id="sec35"></a>
@@ -211,6 +235,94 @@ RTS 单位指令。
 - **程序化内容生成（PCG）。** 用算法生成关卡、地图、地牢、掉落与地形：《Rogue》
   （1980）、《Spelunky》、《我的世界》、《无人深空》（1800 亿亿颗星球）。如今越来越多
   与 ML（“PCGML”）以及生成式模型混合。
+- **影响力图（Influence Map）。** 在世界上覆盖一张网格，每格记录“谁控制这片区域”：
+  友军贴正值、敌军贴负值，求和后即得到一张可查询的战术态势图——高友军值处是安全集结点，
+  正负交界处是**前线**，高敌军值处要绕开。是 RTS 与 FPS 战术定位的廉价利器。
+
+▶ **示例：** [`samples/classic/goap_planner.py`](../samples/classic/goap_planner.py)
+—— F.E.A.R. 式士兵，目标是“消灭敌人”，由 A\* 在世界状态空间中搜索出计划：未持枪时给出
+长计划，已持枪时给出短计划，无手雷可用时**无解**——纯粹的运行时重规划。
+
+▶ **示例：** [`samples/classic/minimax_tictactoe.py`](../samples/classic/minimax_tictactoe.py)
+—— 完美（不可战胜）的井字棋：自我对弈必然平局，对随机方约 199/200 取胜，并打印节点数
+展示 alpha-beta **约 96%** 的剪枝收益。
+
+▶ **示例：** [`samples/classic/mcts_connect_four.py`](../samples/classic/mcts_connect_four.py)
+—— MCTS 以每步 500 次随机模拟下四子棋，打印各着法的访问统计（“思考”过程），稳定击败
+随机对手——正是（叠加神经网络后）成就 AlphaGo 的搜索。
+
+---
+
+### 3.6 射击（FPS）AI —— 从 Doom 到彩虹六号与 Apex <a id="sec36"></a>
+
+第一人称射击推动了数十年的战斗 AI 演进，其历程就像把经典工具箱一层层叠高：
+
+- **1993《Doom》：状态机 + 视线。** 怪物是纯 FSM，靠**视线与声音**唤醒；一条
+  **“怪物内斗”**规则（被别的怪误伤就反击）几乎零成本地制造出至今仍被利用的涌现混乱。
+  证明**好手感来自简单规则 + 良好的“预告”，而非复杂 AI**。
+- **1998《半衰期》：小队与战术的错觉。** 陆战队看似包抄、撤退、呼喊掩护——底层是
+  任务 / 小队槽系统，但**语音播报**（“他在包抄！”）让玩家脑补出远超实际的智能。
+- **2005《F.E.A.R.》：GOAP 与战斗 AI 的巅峰。** 复制体士兵用 **GOAP + 掩体系统**涌现出
+  **火力压制 + 机动包抄**：一名士兵**压制**把玩家钉在掩体后，其他士兵绕到新角度包抄、
+  用手雷驱赶——并全程喊出来。这套“压制—包抄”正是现代射击小队 AI 的内核。
+- **2015 至今：破坏、装备与大逃杀。** **《彩虹六号：围攻》**以**全可破坏环境**定义自身，
+  掩体与视线由玩家动态制造，AI 必须对一张不断变形的地图做推理；**《Apex 英雄》**等大逃杀
+  以 PvP 为主，其“AI”更多是**新手机器人**与瞄准 / 移动系统。
+- **2008《求生之路》：AI 导演。** 它不是对手，而是隐形的**编剧**——观察玩家压力，动态
+  安排尸潮与补给的起伏，把动态难度变成**叙事**。
+
+**用途 / 局限。** 这套（视线 + 掩体 + 压制 + 小队分工 + 预告）栈给出可读、可调、爽快的
+战斗，是单人 / 合作射击的默认方案；局限依旧是反应式、可被摸透，且掩体点需要良好编写。
+完全学习式的 FPS 战斗智能体在研究中存在，但因机器的“完美枪法”反而必须被削弱才好玩，
+故在上线游戏中罕见。
+
+▶ **示例：** [`samples/fps/tactical_fps.py`](../samples/fps/tactical_fps.py)
+—— 二人小队对据守玩家执行**火力压制 + 机动包抄**：**锚点**占据射击位并**压制**（玩家被
+钉住、只盯着眼前威胁），**包抄手**沿**规避视线的路径**绕到不同方位完成击杀。视线、掩体、
+压制、包抄——整条 Doom → F.E.A.R. → 现代 的链路，浓缩在一个可运行文件里。
+
+---
+
+### 3.7 即时战略（RTS）AI —— 命令与征服 / 红色警戒 <a id="sec37"></a>
+
+RTS AI 不是单一算法，而是每帧运行的一**叠管理器**，每个都是经典的手工策略：
+
+- **经济管理器**——采矿车采集资源换取金钱；保持电力为正（缺电会“跳闸”，采集减半）。
+- **建造顺序 / 科技管理器**——一条“我最缺什么”的优先级策略：先电力，再经济，再解锁
+  目标兵种的科技建筑。
+- **生产管理器**——按生产建筑的产能（真实的生产队列）逐个产出作战单位，军队渐进增长。
+- **战术管理器**——攒够军队后发动**攻击波**；每次交战都会消耗军队，于是再攒、再打。
+
+和《文明》一样，**经典 RTS AI 也“略微作弊”**：高难度下获得资源加成、常常还有**全图视野**
+（不用侦察就能看到你的基地），因为让 AI 公平地在战争迷雾下做战略太难写了。《红色警戒》
+的遭遇战 AI、《帝国时代》《星际争霸》的内置 AI 都依赖这类让步。有趣的是，RTS AI 是个
+**平衡问题**：“速攻”（廉价兵早压）与“运营”（贪经济、攀科技）在不同数值下互有胜负。
+
+> 前沿：《星际争霸 2》是策略 AI 的圣杯（实时、战争迷雾、巨大动作空间、长时程）。2019 年
+> DeepMind 的 **AlphaStar**（深度 RL + 模仿学习 + 联赛式自我对弈）达到**宗师**段位——这是
+> 经典工具箱无法完全攻克、最终由学习攻克的难题。
+
+▶ **示例：** [`samples/rts/command_conquer_ai.py`](../samples/rts/command_conquer_ai.py)
+—— 一场《红警》式遭遇战：**步兵速攻**流对阵**运营→坦克**流，各自是一整套 经济 / 建造 /
+生产 / 战术 管理器，胜负取决于数值——RTS 平衡难题的缩影。
+
+---
+
+### 3.8 策略帝国（4X）AI —— 文明与“难度加成” <a id="sec38"></a>
+
+回合制 4X（《文明》《无尽传奇》）AI 首要靠**效用 AI**：每回合为每座城市把所有可造之物
+按帝国当前需求打分选最高；帝国层面则为科研、外交、扩张 / 开战打分。再配上单位寻路、
+前线用的影响力图和简单的战斗规则，就构成一个 4X 对手。
+
+**《文明》难度的公开秘密。** 高难度下的 AI **并非更聪明，而是获得加成**：额外起始单位、
+更便宜的建造、生产与科研加成、更低维护，以及更强侵略性。决策逻辑跨难度基本**相同**，
+高难度只是塞给 AI 一份**资源让步**。这是多数策略游戏难度的务实真相——真正**更聪明**的
+战略 AI 极难编写，于是用加成来提供挑战。
+
+▶ **示例：** [`samples/strategy/civ_ai.py`](../samples/strategy/civ_ai.py)
+—— 一个 4X 帝国 AI，用**效用打分**建造每座城市、研究科技树并扩张；并直接演示“难度加成”
+真相：让**同一套大脑**分别以公平的“国王”帝国与获加成的“神级”帝国运行，你会看到决定胜负的
+是**让步**而非智力。
 
 ---
 
@@ -258,6 +370,10 @@ RTS/MOBA 微操）打造智能体；自动化试玩与平衡性测试；NPC 技�
 
 ▶ **示例：** [`samples/rl/q_learning.py`](../samples/rl/q_learning.py) —— 一个表格型
 Q-learning 智能体仅凭奖励就发现穿越迷宫（并避开陷阱）的最优路径，然后打印出学到的策略。
+
+▶ **示例：** [`samples/rl/sophy_racing_qlearn.py`](../samples/rl/sophy_racing_qlearn.py)
+—— 把同一算法用于**驾驶**：没有任何预设赛车线，智能体学会一套“弯前刹车、直道加速”的
+速度曲线——Sophy 的核心思想在教学尺度上的再现。
 
 ---
 
@@ -339,14 +455,24 @@ Q-learning 智能体仅凭奖励就发现穿越迷宫（并避开陷阱）的最
 | 类型 | 指南章节 | 可运行示例 |
 |------|----------|------------|
 | 赛车 AI | [3.4](#sec34) | [`samples/racing/racing_ai.py`](../samples/racing/racing_ai.py) |
+| 马力欧卡丁车道具 | [3.4](#sec34) | [`samples/racing/mario_kart_items.py`](../samples/racing/mario_kart_items.py) |
 | NPC（FSM / BT） | [3.1](#sec31) | [`samples/npc/npc_fsm.py`](../samples/npc/npc_fsm.py) |
+| 吃豆人幽灵 AI | [3.1](#sec31) | [`samples/classic/pacman_ghosts.py`](../samples/classic/pacman_ghosts.py) |
 | 集群 / 蜂群敌人 | [3.2](#sec32) | [`samples/flocking/flocking.py`](../samples/flocking/flocking.py) |
 | 追踪 / 追击敌人 | [3.3](#sec33) | [`samples/follow/pathfinding_astar.py`](../samples/follow/pathfinding_astar.py) |
+| GOAP 规划（F.E.A.R.） | [3.5](#sec35) | [`samples/classic/goap_planner.py`](../samples/classic/goap_planner.py) |
+| Minimax + alpha-beta | [3.5](#sec35) | [`samples/classic/minimax_tictactoe.py`](../samples/classic/minimax_tictactoe.py) |
+| MCTS（四子棋） | [3.5](#sec35) | [`samples/classic/mcts_connect_four.py`](../samples/classic/mcts_connect_four.py) |
+| FPS 战术小队 | [3.6](#sec36) | [`samples/fps/tactical_fps.py`](../samples/fps/tactical_fps.py) |
+| RTS 遭遇战（红警） | [3.7](#sec37) | [`samples/rts/command_conquer_ai.py`](../samples/rts/command_conquer_ai.py) |
+| 4X 帝国（文明） | [3.8](#sec38) | [`samples/strategy/civ_ai.py`](../samples/strategy/civ_ai.py) |
 | RL 智能体 | [4.1](#sec41) | [`samples/rl/q_learning.py`](../samples/rl/q_learning.py) |
+| RL 赛车（Sophy 式） | [4.1](#sec41) | [`samples/rl/sophy_racing_qlearn.py`](../samples/rl/sophy_racing_qlearn.py) |
 | 生成式 AI 智能体 | [4.2](#sec42) | [`samples/generative/generative_npc.py`](../samples/generative/generative_npc.py) |
 
 所有示例都可在 Python 标准库上运行（生成式示例可选使用 Anthropic SDK，并带有离线
-回退）。详见 [`../samples/README.md`](../samples/README.md)。
+回退）。详见 [`../samples/README.md`](../samples/README.md)。类型深入剖析见完整
+**[教程书](game-ai-book.en.md)**。
 
 ---
 

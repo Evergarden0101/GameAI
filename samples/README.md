@@ -1,17 +1,20 @@
 # Game AI Samples · 游戏 AI 示例代码
 
-Six runnable, self-contained programs — one per genre covered in the
-[Game AI guide](../docs/game-ai-guide.en.md) ([中文](../docs/game-ai-guide.zh.md)).
+Fifteen runnable, self-contained programs — the hands-on companion to the
+[Game AI book](../docs/game-ai-book.en.md) and the bilingual guides
+([EN](../docs/game-ai-guide.en.md) · [中文](../docs/game-ai-guide.zh.md)).
 
-六个可独立运行的示例程序，每个对应指南中的一个 AI 类型。
+十五个可独立运行的示例程序，是[《游戏 AI》教程书](../docs/game-ai-book.en.md)与
+双语指南的动手实践部分。
 
 ## Requirements · 环境要求
 
-- **Python 3.8+**. Samples 1–5 use **only the standard library** — nothing to install.
-  示例 1–5 仅用标准库，无需安装任何依赖。
-- Sample 6 (generative NPC) optionally uses the Anthropic SDK; without it, it
-  runs an **offline mock** automatically.
-  示例 6 可选安装 Anthropic SDK；未安装时自动使用离线模拟。
+- **Python 3.8+**. **Every sample except the generative NPC uses only the
+  standard library** — nothing to install.
+  除生成式 NPC 外，所有示例仅用 Python 标准库，无需安装依赖。
+- The generative NPC optionally uses the Anthropic SDK; without it, it runs an
+  **offline mock** automatically.
+  生成式 NPC 可选安装 Anthropic SDK；未安装时自动使用离线模拟。
 
 ```bash
 # optional, only for the live LLM NPC:
@@ -19,22 +22,45 @@ pip install -r requirements.txt
 export ANTHROPIC_API_KEY=sk-...      # or run: ant auth login
 ```
 
-## The samples · 示例列表
+## Tier 1 — Classic toolbox · 经典技术工具箱
 
-| # | Genre · 类型 | File | Technique · 技术 | Run |
-|---|--------------|------|------------------|-----|
-| 1 | Car racing AI · 赛车 AI | [`racing/racing_ai.py`](racing/racing_ai.py) | Waypoint following, PID steering, rubber-banding · 路点跟随、PID 转向、橡皮筋难度 | `python racing/racing_ai.py` |
-| 2 | NPC · 非玩家角色 | [`npc/npc_fsm.py`](npc/npc_fsm.py) | Finite state machine + behavior tree · 有限状态机 + 行为树 | `python npc/npc_fsm.py` |
-| 3 | Cluster / swarm enemy · 集群敌人 | [`flocking/flocking.py`](flocking/flocking.py) | Boids flocking (separation / alignment / cohesion) · Boids 集群 | `python flocking/flocking.py` |
-| 4 | Follow / chase enemy · 追踪敌人 | [`follow/pathfinding_astar.py`](follow/pathfinding_astar.py) | A\* pathfinding, re-planned each tick · A\* 寻路，逐帧重规划 | `python follow/pathfinding_astar.py` |
-| 5 | RL agent · 强化学习智能体 | [`rl/q_learning.py`](rl/q_learning.py) | Tabular Q-learning grid world · 表格型 Q-learning | `python rl/q_learning.py` |
-| 6 | Generative AI agent · 生成式 AI 智能体 | [`generative/generative_npc.py`](generative/generative_npc.py) | LLM-driven NPC with persona, memory & tool use · LLM 驱动的 NPC（人设 / 记忆 / 工具调用） | `python generative/generative_npc.py` |
+| Genre / Technique · 类型 / 技术 | File | Run |
+|---|---|---|
+| NPC state machine + behavior tree · 状态机 + 行为树 | [`npc/npc_fsm.py`](npc/npc_fsm.py) | `python npc/npc_fsm.py` |
+| Pac-Man ghost AI (4 personalities) · 吃豆人幽灵 AI（四性格） | [`classic/pacman_ghosts.py`](classic/pacman_ghosts.py) | `python classic/pacman_ghosts.py` |
+| Cluster / swarm enemies — Boids · 集群敌人 | [`flocking/flocking.py`](flocking/flocking.py) | `python flocking/flocking.py` |
+| Follow / chase — A\* pathfinding · 追踪寻路 | [`follow/pathfinding_astar.py`](follow/pathfinding_astar.py) | `python follow/pathfinding_astar.py` |
+| GOAP planner (F.E.A.R.-style) · 目标导向规划 | [`classic/goap_planner.py`](classic/goap_planner.py) | `python classic/goap_planner.py` |
+| Minimax + alpha-beta (unbeatable) · 极小化极大 + 剪枝 | [`classic/minimax_tictactoe.py`](classic/minimax_tictactoe.py) | `python classic/minimax_tictactoe.py` |
+| Monte-Carlo Tree Search · 蒙特卡洛树搜索 | [`classic/mcts_connect_four.py`](classic/mcts_connect_four.py) | `python classic/mcts_connect_four.py` |
 
-## Run all at once · 一次运行全部
+## Tier 2 — Genre deep-dives · 类型深入
+
+| Genre · 类型 | File | Run |
+|---|---|---|
+| 🏎️ Car racing AI (waypoints/PID/rubber-band) · 赛车 AI | [`racing/racing_ai.py`](racing/racing_ai.py) | `python racing/racing_ai.py` |
+| 🏁 Mario Kart items + catch-up · 马里奥卡丁车道具 | [`racing/mario_kart_items.py`](racing/mario_kart_items.py) | `python racing/mario_kart_items.py` |
+| 🔫 FPS tactical squad (LOS / cover / suppress / flank) · 射击战术 | [`fps/tactical_fps.py`](fps/tactical_fps.py) | `python fps/tactical_fps.py` |
+| ⚙️ RTS skirmish (C&C / Red Alert) · 即时战略 | [`rts/command_conquer_ai.py`](rts/command_conquer_ai.py) | `python rts/command_conquer_ai.py` |
+| 🏛️ 4X empire (Civilization + difficulty bonuses) · 策略帝国 | [`strategy/civ_ai.py`](strategy/civ_ai.py) | `python strategy/civ_ai.py` |
+
+## Tier 3 — Modern / learned AI · 现代 / 学习式 AI
+
+| Genre · 类型 | File | Run |
+|---|---|---|
+| 🧠 RL agent — Q-learning maze · 强化学习（迷宫） | [`rl/q_learning.py`](rl/q_learning.py) | `python rl/q_learning.py` |
+| 🏎️ RL racer — Sophy-style speed control · 学习竞速 | [`rl/sophy_racing_qlearn.py`](rl/sophy_racing_qlearn.py) | `python rl/sophy_racing_qlearn.py` |
+| 💬 Generative LLM NPC + tool use · 生成式 NPC | [`generative/generative_npc.py`](generative/generative_npc.py) | `python generative/generative_npc.py` |
+
+## Run them all · 一次运行全部
 
 ```bash
-for f in racing/racing_ai.py npc/npc_fsm.py flocking/flocking.py \
-         follow/pathfinding_astar.py rl/q_learning.py generative/generative_npc.py; do
+for f in npc/npc_fsm.py classic/pacman_ghosts.py flocking/flocking.py \
+         follow/pathfinding_astar.py classic/goap_planner.py \
+         classic/minimax_tictactoe.py classic/mcts_connect_four.py \
+         racing/racing_ai.py racing/mario_kart_items.py fps/tactical_fps.py \
+         rts/command_conquer_ai.py strategy/civ_ai.py \
+         rl/q_learning.py rl/sophy_racing_qlearn.py generative/generative_npc.py; do
   echo "=== $f ==="; python "$f"; echo
 done
 ```
@@ -43,9 +69,11 @@ done
 
 - Each file is **independent** (no shared modules) so you can copy one out on its own.
   每个文件相互独立，可单独复制使用。
-- The code favors clarity over performance — it is meant to be read and learned from.
+- The code favors **clarity over performance** — it is meant to be read and learned from.
   代码以清晰易懂为先，便于学习，而非追求性能。
-- These are **classical, deterministic teaching implementations**. Production
-  engines add spatial hashing, nav-meshes, steering-behavior blending, neural
-  networks, etc. — see the guide for how each scales up.
-  这些是经典的教学实现；实际引擎会加入空间哈希、导航网格、神经网络等，详见指南。
+- Every simulation is **deterministic** (seeded) so runs are reproducible.
+  每个模拟都是确定性的（固定随机种子），结果可复现。
+- These are **classical teaching implementations**. Production engines add spatial
+  hashing, nav-meshes, steering blends, neural networks, GPU search, etc. — see the
+  [book](../docs/game-ai-book.en.md) for how each scales up.
+  这些是经典教学实现；实际引擎会加入空间哈希、导航网格、神经网络等，详见教程书。

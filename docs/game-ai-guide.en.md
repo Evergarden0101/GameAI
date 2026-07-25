@@ -4,6 +4,13 @@
 
 > Companion runnable code for every genre below lives in [`../samples`](../samples).
 
+> 📖 **Want the full, book-length treatment?** This page is the concise guide.
+> The complete illustrated textbook — with genre deep-dives on **Mario Kart &
+> Gran Turismo Sophy, Doom / F.E.A.R. / Rainbow Six / Apex, and Civilization /
+> Red Alert / StarCraft**, plus chapters on minimax, MCTS, GOAP, influence maps,
+> exercises and a glossary — is **[Game AI: From Pac-Man to GT Sophy](game-ai-book.en.md)**
+> (also available as a [Word document](game-ai-book.docx)).
+
 ---
 
 ## Table of Contents
@@ -386,15 +393,26 @@ and always bound a generative agent's power with tools and validation.
 | Genre | Guide section | Runnable sample |
 |-------|---------------|-----------------|
 | Car racing AI | [3.4](#34-car-racing-ai--waypoints-steering--rubber-banding) | [`samples/racing/racing_ai.py`](../samples/racing/racing_ai.py) |
+| Mario Kart items & catch-up | [book ch.10](game-ai-book.en.md) | [`samples/racing/mario_kart_items.py`](../samples/racing/mario_kart_items.py) |
 | NPCs (FSM / BT) | [3.1](#31-npcs--finite-state-machines--behavior-trees) | [`samples/npc/npc_fsm.py`](../samples/npc/npc_fsm.py) |
+| Pac-Man ghost AI | [3.1](#31-npcs--finite-state-machines--behavior-trees) | [`samples/classic/pacman_ghosts.py`](../samples/classic/pacman_ghosts.py) |
 | Cluster / swarm enemies | [3.2](#32-cluster--swarm-enemies--flocking-boids) | [`samples/flocking/flocking.py`](../samples/flocking/flocking.py) |
 | Follow / chase enemies | [3.3](#33-follow--chase-enemies--pathfinding-a) | [`samples/follow/pathfinding_astar.py`](../samples/follow/pathfinding_astar.py) |
+| GOAP planner (F.E.A.R.) | [3.5](#35-other-classic-techniques-goap-utility-ai-mcts-pcg) | [`samples/classic/goap_planner.py`](../samples/classic/goap_planner.py) |
+| Minimax + alpha-beta | [3.5](#35-other-classic-techniques-goap-utility-ai-mcts-pcg) | [`samples/classic/minimax_tictactoe.py`](../samples/classic/minimax_tictactoe.py) |
+| MCTS (Connect Four) | [3.5](#35-other-classic-techniques-goap-utility-ai-mcts-pcg) | [`samples/classic/mcts_connect_four.py`](../samples/classic/mcts_connect_four.py) |
+| FPS tactical squad AI | [book ch.11](game-ai-book.en.md) | [`samples/fps/tactical_fps.py`](../samples/fps/tactical_fps.py) |
+| RTS skirmish (C&C / Red Alert) | [book ch.12](game-ai-book.en.md) | [`samples/rts/command_conquer_ai.py`](../samples/rts/command_conquer_ai.py) |
+| 4X empire AI (Civilization) | [book ch.12](game-ai-book.en.md) | [`samples/strategy/civ_ai.py`](../samples/strategy/civ_ai.py) |
 | RL agents | [4.1](#41-reinforcement-learning-rl-agents) | [`samples/rl/q_learning.py`](../samples/rl/q_learning.py) |
+| RL racer (Sophy-style) | [4.1](#41-reinforcement-learning-rl-agents) | [`samples/rl/sophy_racing_qlearn.py`](../samples/rl/sophy_racing_qlearn.py) |
 | Generative AI agents | [4.2](#42-generative-ai-agents-llm-driven) | [`samples/generative/generative_npc.py`](../samples/generative/generative_npc.py) |
 
 All samples run on the Python standard library (the generative one optionally
 uses the Anthropic SDK, with an offline fallback). See
-[`../samples/README.md`](../samples/README.md).
+[`../samples/README.md`](../samples/README.md). For deep-dives on the racing,
+shooter, and strategy genres above, see the full
+**[book](game-ai-book.en.md)**.
 
 ---
 

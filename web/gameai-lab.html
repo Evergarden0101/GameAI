@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game AI: Interactive Debug Viewports</title>
+<style>*{box-sizing:border-box}html,body{margin:0}</style>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#eef2f7; --panel:#ffffff; --panel-2:#f5f8fc; --line:#d6e0ea;
+    --ink:#14212e; --muted:#5b6b7b; --accent:#0b83c9; --accent-2:#6d54e6;
+    --viewport:#0a0f16; --vp-line:#1d2a38; --hud:#7f95a9;
+    --good:#0f9d6b; --warn:#d98a12; --bad:#d7405f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0b1017; --panel:#111a24; --panel-2:#0d151e; --line:#20303f;
+      --ink:#e7eff7; --muted:#8ba0b4; --accent:#38bdf8; --accent-2:#a78bfa;
+      --viewport:#080d13; --vp-line:#1c2836; --hud:#8299ad;
+      --good:#34d399; --warn:#fbbf24; --bad:#fb6f8e;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#eef2f7; --panel:#ffffff; --panel-2:#f5f8fc; --line:#d6e0ea;
+    --ink:#14212e; --muted:#5b6b7b; --accent:#0b83c9; --accent-2:#6d54e6;
+    --viewport:#0a0f16; --vp-line:#1d2a38; --hud:#7f95a9;
+    --good:#0f9d6b; --warn:#d98a12; --bad:#d7405f;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b1017; --panel:#111a24; --panel-2:#0d151e; --line:#20303f;
+    --ink:#e7eff7; --muted:#8ba0b4; --accent:#38bdf8; --accent-2:#a78bfa;
+    --viewport:#080d13; --vp-line:#1c2836; --hud:#8299ad;
+    --good:#34d399; --warn:#fbbf24; --bad:#fb6f8e;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* hero */
+  header.hero{padding:64px 0 30px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--accent);display:flex;gap:10px;align-items:center}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--accent)}
+  h1{font-size:clamp(30px,5.2vw,50px);line-height:1.05;margin:16px 0 12px;
+    letter-spacing:-.02em;text-wrap:balance;font-weight:750}
+  h1 .hl{color:var(--accent)}
+  .lede{max-width:60ch;color:var(--muted);font-size:clamp(15px,2vw,17px)}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--panel)}
+  .chip b{color:var(--ink);font-weight:600}
+
+  /* module */
+  .module{padding:44px 0;border-bottom:1px solid var(--line)}
+  .m-head{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
+  .m-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted)}
+  .m-eyebrow b{color:var(--accent-2)}
+  .m-title{font-size:clamp(21px,3.2vw,27px);font-weight:700;letter-spacing:-.01em;margin:0}
+  .m-sub{color:var(--muted);max-width:64ch;margin:2px 0 0}
+
+  .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:26px;align-items:start}
+  @media(max-width:800px){.grid{grid-template-columns:1fr}}
+
+  /* viewport (always dark screen) */
+  .viewport{background:var(--viewport);border:1px solid var(--vp-line);border-radius:12px;
+    padding:14px;position:relative;overflow:hidden}
+  .viewport::before{content:"";position:absolute;inset:7px;border:1px solid rgba(255,255,255,.04);
+    border-radius:8px;pointer-events:none}
+  .vp-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+    font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--hud);letter-spacing:.08em}
+  .vp-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--good);display:inline-block;margin-right:6px;
+    box-shadow:0 0 8px var(--good)}
+  canvas{display:block;width:100%;height:auto;image-rendering:auto;border-radius:4px}
+  /* viewport screens are always dark, so their inner text is theme-independent */
+  .hud{margin-top:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8299ad;
+    min-height:18px;letter-spacing:.02em}
+  .hud .k{color:#eaf1f8;font-weight:600}
+  .vp-bar,.vp-bar span{color:#8299ad !important}
+
+  /* controls / explainer panel */
+  .panel h4{margin:0 0 4px;font-size:13px;font-family:ui-monospace,Menlo,monospace;
+    text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+  .panel p{margin:0 0 14px;color:var(--muted);font-size:14.5px}
+  .panel p strong{color:var(--ink);font-weight:650}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+  button.ctl{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;cursor:pointer;
+    background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+    padding:8px 13px;transition:border-color .15s,background .15s,transform .05s}
+  button.ctl:hover{border-color:var(--accent)}
+  button.ctl:active{transform:translateY(1px)}
+  button.ctl.pri{background:var(--accent);color:#04121c;border-color:var(--accent);font-weight:650}
+  button.ctl[aria-pressed="true"]{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  button.ctl:focus-visible,.board button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .legend{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+  .legend .row{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+  .legend .sw{width:13px;height:13px;border-radius:3px;margin-top:4px;flex:0 0 auto}
+  .legend .row span{color:var(--muted)}
+  .legend .row b{color:var(--ink)}
+
+  /* tic-tac-toe board */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:0 auto}
+  .board button{aspect-ratio:1;font-size:40px;font-weight:700;font-family:ui-monospace,Menlo,monospace;
+    background:var(--viewport);border:1px solid var(--vp-line);border-radius:10px;cursor:pointer;
+    color:var(--ink);transition:background .12s}
+  .board button:hover:not(:disabled){background:#12202e}
+  .board button:disabled{cursor:not-allowed}
+  .board button .x{color:var(--accent)} .board button .o{color:var(--warn)}
+  .verdict{text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:13px;
+    margin-top:14px;color:#8299ad;min-height:20px}
+  .verdict.win{color:var(--good)} .verdict.lose{color:var(--bad)} .verdict.draw{color:var(--warn)}
+
+  footer{padding:40px 0 64px;color:var(--muted);font-size:14px}
+  footer code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--ink)}
+  a{color:var(--accent)}
+  @media (prefers-reduced-motion: reduce){*{scroll-behavior:auto}}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow mono">Game AI · Debug Viewports</div>
+    <h1>Watch the algorithms <span class="hl">think</span>.</h1>
+    <p class="lede">Three interactive debug views of the classic and not-so-classic AI behind game
+      characters — the same techniques dissected in the companion book and runnable Python. Poke them,
+      pause them, and try to beat the one that can't be beaten.</p>
+    <div class="hero-meta mono">
+      <span class="chip"><b>01</b> &nbsp;Pac-Man ghost personalities</span>
+      <span class="chip"><b>02</b> &nbsp;FPS suppress &amp; flank</span>
+      <span class="chip"><b>03</b> &nbsp;Unbeatable minimax</span>
+    </div>
+  </div>
+</header>
+
+<!-- ───────────────── MODULE 01 · PAC-MAN ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Movement &amp; personality · <b>finite state machines</b></div>
+      <h2 class="m-title">Four ghosts, four one-line rules</h2>
+      <p class="m-sub">Every ghost runs the identical routine — step toward your own "target tile",
+        never reverse. The personalities live entirely in <em>how the target is chosen</em>. Toggle the
+        target markers to see each ghost's intent.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport">
+        <div class="vp-bar mono"><span><span class="dot"></span>PACMAN.SIM</span><span id="pac-mode">CHASE</span></div>
+        <canvas id="pac-canvas" width="450" height="330" aria-label="Pac-Man ghost AI simulation"></canvas>
+        <div class="hud mono" id="pac-hud">Ghosts hunting…</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="pac-play">Pause</button>
+          <button class="ctl" id="pac-step">Step</button>
+          <button class="ctl" id="pac-targets" aria-pressed="true">Targets: on</button>
+        </div>
+        <div class="legend">
+          <div class="row"><span class="sw" style="background:#ff5a5a"></span><span><b>Blinky</b> — targets your tile. The relentless chaser, always on your tail.</span></div>
+          <div class="row"><span class="sw" style="background:#ffb6dc"></span><span><b>Pinky</b> — targets 4 tiles <em>ahead</em> of you, trying to cut you off.</span></div>
+          <div class="row"><span class="sw" style="background:#4ce0e0"></span><span><b>Inky</b> — aims at a point reflected through Blinky, for erratic pincers.</span></div>
+          <div class="row"><span class="sw" style="background:#ffb84d"></span><span><b>Clyde</b> — chases when far, but flees to his corner when he gets close.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── MODULE 02 · FPS ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Tactical squad AI · <b>line-of-sight · cover · suppression</b></div>
+      <h2 class="m-title">Fire and maneuver</h2>
+      <p class="m-sub">The core loop of shooter squad AI from <em>Doom</em> to <em>F.E.A.R.</em>: the
+        <b style="color:var(--accent)">anchor</b> pins the player with suppressing fire so they tunnel-vision on the
+        visible threat, while the <b style="color:var(--accent-2)">flanker</b> takes a concealed path to a new angle
+        for the kill.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport">
+        <div class="vp-bar mono"><span><span class="dot"></span>TACTICS.SIM</span><span id="fps-tick">t=0</span></div>
+        <canvas id="fps-canvas" width="460" height="253" aria-label="FPS tactical squad AI simulation"></canvas>
+        <div class="hud mono" id="fps-hud">Squad advancing…</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="fps-play">Pause</button>
+          <button class="ctl" id="fps-step">Step</button>
+          <button class="ctl" id="fps-reset">Replay</button>
+        </div>
+        <div class="legend">
+          <div class="row"><span class="sw" style="background:#f5a623"></span><span><b>Player</b> — a dug-in defender. Return fire is strong… until suppression pins them.</span></div>
+          <div class="row"><span class="sw" style="background:#38bdf8"></span><span><b>Anchor</b> — moves to a firing position and <em>suppresses</em>, drawing the player's attention.</span></div>
+          <div class="row"><span class="sw" style="background:#a78bfa"></span><span><b>Flanker</b> — hugs cover (dashed path) to reach an unguarded bearing, then fires.</span></div>
+          <div class="row"><span class="sw" style="background:#2b3a4b"></span><span><b>Walls</b> — hard cover that blocks movement <em>and</em> line-of-sight.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── MODULE 03 · MINIMAX ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Adversarial search · <b>minimax + alpha-beta</b></div>
+      <h2 class="m-title">The opponent that cannot lose</h2>
+      <p class="m-sub">This board searches the entire game tree with minimax and plays perfectly. The best
+        you can do is force a draw — which is the whole point of the algorithm behind Deep Blue.
+        Go ahead, try to win.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport" style="display:flex;flex-direction:column;justify-content:center">
+        <div class="vp-bar mono"><span><span class="dot"></span>MINIMAX.SIM</span><span id="ttt-nodes">nodes: —</span></div>
+        <div class="board" id="ttt-board"></div>
+        <div class="verdict mono" id="ttt-verdict">You are X. Your move.</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="ttt-new">New game</button>
+          <button class="ctl" id="ttt-first" aria-pressed="false">AI moves first</button>
+        </div>
+        <p>Each time the AI moves it runs <strong>minimax</strong>: it assumes you'll play optimally,
+          scores every reachable end-state, and picks the move with the best guaranteed outcome.
+          <strong>Alpha-beta pruning</strong> skips branches that can't change the choice — the
+          <span class="mono">nodes</span> counter shows how many positions it actually evaluated.</p>
+        <p style="margin-bottom:0">Result over many games against any opponent: it <strong>never loses</strong>.
+          Perfect play from both sides is always a draw.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Interactive companion to <b>Game AI: From Pac-Man to GT Sophy</b>. Each viewport is a live port of a
+    runnable Python sample — <code>classic/pacman_ghosts.py</code>, <code>fps/tactical_fps.py</code>, and
+    <code>classic/minimax_tictactoe.py</code> — from the GameAI repository.
+  </div>
+</footer>
+
+<script>
+"use strict";
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ==================================================================== */
+/* MODULE 01 — PAC-MAN GHOST AI                                          */
+/* ==================================================================== */
+(function(){
+  const MAZE=[
+    "###############","#......#......#","#.####.#.####.#","#.............#",
+    "#.####.#.####.#","#......#......#","#.####.#.####.#","#.............#",
+    "#.####.#.####.#","#......P......#","###############"];
+  const W=MAZE[0].length, H=MAZE.length, TS=30;
+  const cv=document.getElementById("pac-canvas"), ctx=cv.getContext("2d");
+  cv.width=W*TS; cv.height=H*TS;
+  const isWall=(x,y)=> x<0||y<0||x>=W||y>=H||MAZE[y][x]==="#";
+  const UP=[0,-1],LEFT=[-1,0],DOWN=[0,1],RIGHT=[1,0], DIRS=[UP,LEFT,DOWN,RIGHT];
+  const d2=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2;
+  const add=(p,d,k=1)=>[p[0]+d[0]*k,p[1]+d[1]*k];
+  const GH=[
+    {name:"BLINKY",col:"#ff5a5a",pos:[7,3],dir:UP,corner:[W-2,1]},
+    {name:"PINKY", col:"#ffb6dc",pos:[6,5],dir:UP,corner:[1,1]},
+    {name:"INKY",  col:"#4ce0e0",pos:[8,5],dir:UP,corner:[W-2,H-2]},
+    {name:"CLYDE", col:"#ffb84d",pos:[7,7],dir:UP,corner:[1,H-2]}];
+  let pac,pacDir,dots,step,running=!REDUCED,showTargets=true,caughtAt=-1;
+
+  function reset(){
+    pac=[7,9]; pacDir=LEFT; step=0; caughtAt=-1;
+    dots=new Set();
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(MAZE[y][x]==="."||MAZE[y][x]==="P") dots.add(x+","+y);
+    GH[0].pos=[7,3];GH[1].pos=[6,5];GH[2].pos=[8,5];GH[3].pos=[7,7];
+    GH.forEach(g=>g.dir=UP);
+  }
+  const mode=()=> (Math.floor(step/7)%3===0)?"SCATTER":"CHASE";
+
+  function targetFor(g,m){
+    if(m==="SCATTER") return g.corner;
+    if(g.name==="BLINKY") return pac;
+    if(g.name==="PINKY")  return add(pac,pacDir,4);
+    if(g.name==="INKY"){ const p=add(pac,pacDir,2); return [2*p[0]-GH[0].pos[0],2*p[1]-GH[0].pos[1]]; }
+    return d2(g.pos,pac)>64 ? pac : g.corner; // CLYDE
+  }
+  function ghostStep(g,t){
+    const rev=[-g.dir[0],-g.dir[1]]; let best=null,bd=1e9;
+    for(const d of DIRS){
+      if(d[0]===rev[0]&&d[1]===rev[1]) continue;
+      const n=add(g.pos,d); if(isWall(n[0],n[1])) continue;
+      const dd=d2(n,t); if(dd<bd){bd=dd;best=d;}
+    }
+    if(!best) best=rev;
+    g.dir=best; g.pos=add(g.pos,best);
+  }
+  function pacStep(){
+    const rev=[-pacDir[0],-pacDir[1]];
+    let nearest=GH[0]; for(const g of GH) if(d2(g.pos,pac)<d2(nearest.pos,pac)) nearest=g;
+    const opts=[];
+    for(const d of DIRS){ const n=add(pac,d); if(!isWall(n[0],n[1])) opts.push([d,n]); }
+    opts.sort((a,b)=>{
+      const da=d2(a[1],nearest.pos), db=d2(b[1],nearest.pos);
+      if(db!==da) return db-da;
+      return (a[0][0]===rev[0]&&a[0][1]===rev[1]?1:0)-(b[0][0]===rev[0]&&b[0][1]===rev[1]?1:0);
+    });
+    pacDir=opts[0][0]; pac=opts[0][1]; dots.delete(pac[0]+","+pac[1]);
+  }
+  function tick(){
+    if(caughtAt>=0){ if(step-caughtAt>4){reset();} else step++; return; }
+    step++; pacStep();
+    const m=mode();
+    for(const g of GH) ghostStep(g,targetFor(g,m));
+    document.getElementById("pac-mode").textContent=m;
+    if(GH.some(g=>g.pos[0]===pac[0]&&g.pos[1]===pac[1])){
+      caughtAt=step;
+      const who=GH.find(g=>g.pos[0]===pac[0]&&g.pos[1]===pac[1]);
+      document.getElementById("pac-hud").innerHTML="Caught by <span class='k'>"+who.name+"</span> — the pincer closed. Resetting…";
+    } else {
+      document.getElementById("pac-hud").innerHTML="Mode <span class='k'>"+m+"</span> · dots left <span class='k'>"+dots.size+"</span>";
+    }
+    if(dots.size===0) reset();
+  }
+  function draw(){
+    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      if(MAZE[y][x]==="#"){ ctx.fillStyle="#14346b";
+        ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4); }
+    }
+    ctx.fillStyle="#f4d06a";
+    for(const key of dots){ const [x,y]=key.split(",").map(Number);
+      ctx.beginPath(); ctx.arc(x*TS+TS/2,y*TS+TS/2,2.4,0,7); ctx.fill(); }
+    const m=mode();
+    if(showTargets){
+      for(const g of GH){ const t=targetFor(g,m);
+        const tx=Math.max(0,Math.min(W-1,t[0])), ty=Math.max(0,Math.min(H-1,t[1]));
+        ctx.strokeStyle=g.col; ctx.globalAlpha=.55; ctx.lineWidth=1.5;
+        ctx.strokeRect(tx*TS+5,ty*TS+5,TS-10,TS-10);
+        ctx.beginPath(); ctx.moveTo(tx*TS+9,ty*TS+9); ctx.lineTo(tx*TS+TS-9,ty*TS+TS-9);
+        ctx.moveTo(tx*TS+TS-9,ty*TS+9); ctx.lineTo(tx*TS+9,ty*TS+TS-9); ctx.stroke();
+        ctx.globalAlpha=1;
+      }
+    }
+    // pac
+    ctx.fillStyle="#ffd23f"; const cx=pac[0]*TS+TS/2, cy=pac[1]*TS+TS/2;
+    const ang=Math.atan2(pacDir[1],pacDir[0]);
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,TS*0.42,ang+0.35,ang-0.35); ctx.closePath(); ctx.fill();
+    // ghosts
+    for(const g of GH){
+      const gx=g.pos[0]*TS+TS/2, gy=g.pos[1]*TS+TS/2, r=TS*0.4;
+      ctx.fillStyle=g.col;
+      ctx.beginPath(); ctx.arc(gx,gy-2,r,Math.PI,0); ctx.lineTo(gx+r,gy+r-2);
+      for(let i=0;i<3;i++){ ctx.lineTo(gx+r-(i*2+1)*r/3,gy+r-6); ctx.lineTo(gx+r-(i*2+2)*r/3,gy+r-2); }
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(gx-r*0.35,gy-3,r*0.24,0,7);
+      ctx.arc(gx+r*0.35,gy-3,r*0.24,0,7); ctx.fill();
+    }
+    if(caughtAt>=0){ ctx.fillStyle="rgba(215,64,95,.18)"; ctx.fillRect(0,0,cv.width,cv.height); }
+  }
+  let acc=0,last=0;
+  function loop(ts){ const dt=ts-last; last=ts;
+    if(running){ acc+=dt; if(acc>150){ acc=0; tick(); } }
+    draw(); requestAnimationFrame(loop);
+  }
+  document.getElementById("pac-play").onclick=e=>{ running=!running; e.target.textContent=running?"Pause":"Play"; };
+  document.getElementById("pac-step").onclick=()=>{ tick(); draw(); };
+  document.getElementById("pac-targets").onclick=e=>{ showTargets=!showTargets;
+    e.target.setAttribute("aria-pressed",showTargets); e.target.textContent="Targets: "+(showTargets?"on":"off"); };
+  reset(); if(REDUCED){document.getElementById("pac-play").textContent="Play"; draw();} requestAnimationFrame(loop);
+})();
+
+/* ==================================================================== */
+/* MODULE 02 — FPS SUPPRESS & FLANK                                     */
+/* ==================================================================== */
+(function(){
+  const A=[
+    "####################","#..................#","#....########......#",
+    "#....#......#......#","#....#..P...+......#","#....#......#......#",
+    "#....##+#####......#","#..................#","#..................#",
+    "#..A............B..#","####################"];
+  const W=A[0].length,H=A.length,TS=23;
+  const grid=[],start={};
+  for(let y=0;y<H;y++){ grid.push([]); for(let x=0;x<W;x++){ const c=A[y][x];
+    if(c==="P")start.P=[x,y]; else if(c==="A")start.A=[x,y]; else if(c==="B")start.B=[x,y];
+    grid[y].push(c==="#"?"#":".");
+  }}
+  const cv=document.getElementById("fps-canvas"),ctx=cv.getContext("2d");
+  cv.width=W*TS; cv.height=H*TS;
+  const isWall=(x,y)=> x<0||y<0||x>=W||y>=H||grid[y][x]==="#";
+  const man=(a,b)=>Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]);
+  function los(a,b){ let[x0,y0]=a,[x1,y1]=b; const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0);
+    const sx=x0<x1?1:-1,sy=y0<y1?1:-1; let err=dx-dy,x=x0,y=y0;
+    while(x!==x1||y!==y1){ const e2=2*err; if(e2>-dy){err-=dy;x+=sx;} if(e2<dx){err+=dx;y+=sy;}
+      if((x!==x1||y!==y1)&&isWall(x,y)) return false; } return true; }
+  function nbrs(x,y){ const r=[]; for(const[dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx,ny=y+dy;
+    if(!isWall(nx,ny)) r.push([nx,ny]); } return r; }
+  function dijkstra(s,g,pen,player){ if(s[0]===g[0]&&s[1]===g[1]) return s;
+    const key=p=>p[0]+","+p[1]; const dist={},first={}; dist[key(s)]=0; first[key(s)]=s;
+    const pq=[[0,s]];
+    while(pq.length){ pq.sort((a,b)=>a[0]-b[0]); const [d,c]=pq.shift();
+      if(c[0]===g[0]&&c[1]===g[1]) return first[key(c)];
+      if(d>(dist[key(c)]??1e9)) continue;
+      for(const n of nbrs(c[0],c[1])){ let stepc=1;
+        if(pen&&player&&los(n,player)) stepc+=pen;
+        const nd=d+stepc; if(nd<(dist[key(n)]??1e9)){ dist[key(n)]=nd;
+          first[key(n)]= (c[0]===s[0]&&c[1]===s[1])?n:first[key(c)]; pq.push([nd,n]); } } }
+    return s; }
+  function nearestFiring(s,player){ const key=p=>p[0]+","+p[1]; const seen={[key(s)]:1}; let fr=[s];
+    while(fr.length){ const nx=[]; for(const c of fr){ for(const n of nbrs(c[0],c[1])){ if(seen[key(n)])continue;
+      if(los(n,player)) return n; seen[key(n)]=1; nx.push(n); } } fr=nx; } return s; }
+  function bearing(f,t){ return Math.atan2(t[1]-f[1],t[0]-f[0]); }
+  function findFlank(player,anchor){ let best=null,bs=-1e9; const ab=bearing(player,anchor);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){ if(isWall(x,y)||!los([x,y],player)) continue;
+      const d=man([x,y],player); if(d<3) continue; const fb=bearing(player,[x,y]);
+      const spread=Math.abs(Math.atan2(Math.sin(fb-ab),Math.cos(fb-ab)));
+      const sc=spread*4-0.2*d; if(sc>bs){bs=sc;best=[x,y];} } return best||anchor; }
+
+  let anchor,flanker,player,tick,flankGoal,over,fpath;
+  function reset(){
+    anchor={pos:start.A.slice(),hp:120,state:"ADVANCE"};
+    flanker={pos:start.B.slice(),hp:120,state:"ADVANCE"};
+    player={pos:start.P.slice(),hp:100,supp:false};
+    tick=0; over=null; fpath=[]; flankGoal=findFlank(player.pos,anchor.pos);
+  }
+  function firstStep(from,to,pen){ return dijkstra(from,to,pen,pen?player.pos:null); }
+  function step(){
+    if(over){ if(tick-over.t>6) reset(); else tick++; return; }
+    tick++;
+    // anchor
+    if(anchor.hp>0){ if(los(anchor.pos,player.pos)){ anchor.state="SUPPRESS"; player.supp=true; player.hp-=4; }
+      else { anchor.state="ADVANCE"; anchor.pos=firstStep(anchor.pos,nearestFiring(anchor.pos,player.pos),0); } }
+    // flanker
+    if(flanker.hp>0){ if(flanker.pos[0]===flankGoal[0]&&flanker.pos[1]===flankGoal[1]&&los(flanker.pos,player.pos)){
+        flanker.state="FLANK-FIRE"; player.hp-= player.supp?26:15; }
+      else { flanker.state="FLANK-MOVE"; flanker.pos=firstStep(flanker.pos,flankGoal,6); } }
+    fpath=[flanker.pos.slice(),flankGoal.slice()];
+    // player return fire
+    if(player.hp>0){ if(player.supp&&anchor.hp>0&&los(player.pos,anchor.pos)) anchor.hp-=6;
+      else { const vis=[anchor,flanker].filter(s=>s.hp>0&&los(player.pos,s.pos));
+        if(vis.length){ vis.sort((a,b)=>man(player.pos,a.pos)-man(player.pos,b.pos)); vis[0].hp-=16; } } }
+    player.supp = anchor.state==="SUPPRESS"&&anchor.hp>0;
+    document.getElementById("fps-tick").textContent="t="+tick;
+    if(player.hp<=0){ over={t:tick,msg:"Objective neutralized — flank succeeded."}; }
+    else if(anchor.hp<=0&&flanker.hp<=0){ over={t:tick,msg:"Squad down — the defender held."}; }
+    const hud=document.getElementById("fps-hud");
+    if(over) hud.innerHTML="<span class='k'>"+over.msg+"</span>";
+    else hud.innerHTML="Anchor <span class='k'>"+anchor.state+"</span> · Flanker <span class='k'>"+flanker.state+"</span> · player HP <span class='k'>"+Math.max(0,player.hp)+"</span>"+(player.supp?" · <span class='k'>PINNED</span>":"");
+  }
+  function cell(x,y){ return [x*TS+TS/2,y*TS+TS/2]; }
+  function draw(){
+    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){ if(grid[y][x]==="#"){ ctx.fillStyle="#2b3a4b";
+      ctx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2); } }
+    // suppression beam
+    if(anchor.state==="SUPPRESS"&&anchor.hp>0&&(!over)){ const a=cell(anchor.pos[0],anchor.pos[1]),p=cell(player.pos[0],player.pos[1]);
+      ctx.strokeStyle="rgba(56,189,248,.5)"; ctx.lineWidth=2; ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(p[0],p[1]); ctx.stroke(); ctx.setLineDash([]); }
+    // flank path
+    if(flanker.hp>0&&fpath.length===2&&!over){ const f=cell(fpath[0][0],fpath[0][1]),g=cell(fpath[1][0],fpath[1][1]);
+      ctx.strokeStyle="rgba(167,139,250,.5)"; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(f[0],f[1]); ctx.lineTo(g[0],g[1]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle="rgba(167,139,250,.9)"; ctx.beginPath(); ctx.arc(g[0],g[1],3,0,7); ctx.fill(); }
+    // agents
+    function agent(pos,col,hp,max){ const [cx,cy]=cell(pos[0],pos[1]);
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,TS*0.34,0,7); ctx.fill();
+      ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(cx-9,cy-TS*0.5,18,3);
+      ctx.fillStyle=col; ctx.fillRect(cx-9,cy-TS*0.5,18*Math.max(0,hp)/max,3); }
+    if(player.hp>0) agent(player.pos,"#f5a623",player.hp,100);
+    if(anchor.hp>0) agent(anchor.pos,"#38bdf8",anchor.hp,120);
+    if(flanker.hp>0) agent(flanker.pos,"#a78bfa",flanker.hp,120);
+    if(over){ ctx.fillStyle= over.msg[0]==="O"?"rgba(52,211,153,.16)":"rgba(215,64,95,.16)"; ctx.fillRect(0,0,cv.width,cv.height); }
+  }
+  let acc=0,last=0,running=!REDUCED;
+  function loop(ts){ const dt=ts-last; last=ts; if(running){ acc+=dt; if(acc>170){acc=0; step();} } draw(); requestAnimationFrame(loop); }
+  document.getElementById("fps-play").onclick=e=>{ running=!running; e.target.textContent=running?"Pause":"Play"; };
+  document.getElementById("fps-step").onclick=()=>{ step(); draw(); };
+  document.getElementById("fps-reset").onclick=()=>{ reset(); draw(); };
+  reset(); if(REDUCED){document.getElementById("fps-play").textContent="Play"; draw();} requestAnimationFrame(loop);
+})();
+
+/* ==================================================================== */
+/* MODULE 03 — MINIMAX TIC-TAC-TOE                                      */
+/* ==================================================================== */
+(function(){
+  const WINS=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const boardEl=document.getElementById("ttt-board");
+  const verdict=document.getElementById("ttt-verdict");
+  const nodesEl=document.getElementById("ttt-nodes");
+  let b,human,ai,turn,done,aiFirst=false;
+  const cells=[];
+  for(let i=0;i<9;i++){ const btn=document.createElement("button");
+    btn.setAttribute("aria-label","cell "+(i+1)); btn.dataset.i=i;
+    btn.onclick=()=>play(i); boardEl.appendChild(btn); cells.push(btn); }
+
+  function winner(bd){ for(const[a,c,d] of WINS){ if(bd[a]&&bd[a]===bd[c]&&bd[a]===bd[d]) return bd[a]; } return null; }
+  function moves(bd){ const m=[]; for(let i=0;i<9;i++) if(!bd[i]) m.push(i); return m; }
+  let nodeCount=0;
+  function minimax(bd,pl,depth,alpha,beta){ nodeCount++;
+    const w=winner(bd); if(w===ai) return [10-depth,null]; if(w===human) return [depth-10,null];
+    if(moves(bd).length===0) return [0,null];
+    let bestM=null;
+    if(pl===ai){ let best=-999; for(const m of moves(bd)){ bd[m]=ai;
+      const s=minimax(bd,human,depth+1,alpha,beta)[0]; bd[m]=""; if(s>best){best=s;bestM=m;}
+      alpha=Math.max(alpha,best); if(beta<=alpha) break; } return [best,bestM]; }
+    else { let best=999; for(const m of moves(bd)){ bd[m]=human;
+      const s=minimax(bd,ai,depth+1,alpha,beta)[0]; bd[m]=""; if(s<best){best=s;bestM=m;}
+      beta=Math.min(beta,best); if(beta<=alpha) break; } return [best,bestM]; }
+  }
+  function render(){ for(let i=0;i<9;i++){ const v=b[i];
+    cells[i].innerHTML= v? "<span class='"+(v==="X"?"x":"o")+"'>"+v+"</span>" : "";
+    cells[i].disabled = !!v || done || turn!==human; } }
+  function finish(){ const w=winner(b); done=true;
+    if(w===human){ verdict.textContent="You won?! (that shouldn't happen)"; verdict.className="verdict mono win"; }
+    else if(w===ai){ verdict.textContent="AI wins. Told you."; verdict.className="verdict mono lose"; }
+    else { verdict.textContent="Draw — the best anyone can do."; verdict.className="verdict mono draw"; }
+    render(); }
+  function aiMove(){ nodeCount=0; const [,m]=minimax(b,ai,0,-999,999);
+    nodesEl.textContent="nodes: "+nodeCount.toLocaleString();
+    if(m!=null) b[m]=ai; turn=human;
+    if(winner(b)||moves(b).length===0){ finish(); return; }
+    verdict.textContent="Your move."; verdict.className="verdict mono"; render(); }
+  function play(i){ if(done||b[i]||turn!==human) return; b[i]=human; turn=ai;
+    if(winner(b)||moves(b).length===0){ finish(); return; }
+    verdict.textContent="AI is thinking…"; render(); setTimeout(aiMove, 260); }
+  function reset(){ b=["","","","","","","","",""]; done=false; human="X"; ai="O";
+    nodesEl.textContent="nodes: —";
+    if(aiFirst){ turn=ai; verdict.textContent="AI opens…"; render(); setTimeout(aiMove,260); }
+    else { turn=human; verdict.textContent="You are X. Your move."; verdict.className="verdict mono"; render(); } }
+  document.getElementById("ttt-new").onclick=reset;
+  document.getElementById("ttt-first").onclick=e=>{ aiFirst=!aiFirst;
+    e.target.setAttribute("aria-pressed",aiFirst); e.target.textContent= aiFirst?"You move first":"AI moves first"; reset(); };
+  reset();
+})();
+</script>
+
+</body>
+</html>
