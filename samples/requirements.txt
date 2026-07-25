@@ -1,0 +1,9 @@
+# Only the generative NPC sample needs a third-party package, and even then it
+# falls back to a fully offline mock if this is not installed.
+#
+#   pip install -r requirements.txt
+#
+# Every other sample (racing, npc, flocking, follow, rl) runs on the Python
+# standard library alone — no installation required.
+
+anthropic>=0.40
