@@ -44,12 +44,22 @@ void UMoveInteractor::PerformAgentAction_Implementation(
     const FLearningAgentsActionObjectElement& Action,
     const int32 AgentId)
 {
-    TArray<float> Values;
-    ULearningAgentsActions::GetFloatArrayAction(Values, Object, Action);
+    FVector Dir;
+    if (bUseHumanActions)
+    {
+        // RECORD MODE: use the human's WASD action so the recording captures it.
+        const FVector2D H = HumanActions.FindRef(AgentId);
+        Dir = FVector(H.X, H.Y, 0.f);
+    }
+    else
+    {
+        TArray<float> Values;
+        ULearningAgentsActions::GetFloatArrayAction(Values, Object, Action);
+        Dir = FVector(Values.IsValidIndex(0) ? Values[0] : 0.f,
+                      Values.IsValidIndex(1) ? Values[1] : 0.f, 0.f);
+    }
     if (APawn* Pawn = Cast<APawn>(GetAgent(AgentId)))
     {
-        const FVector Dir(Values.IsValidIndex(0) ? Values[0] : 0.f,
-                          Values.IsValidIndex(1) ? Values[1] : 0.f, 0.f);
         Pawn->AddMovementInput(Dir, 1.f);       // or add force to a physics ball
     }
 }

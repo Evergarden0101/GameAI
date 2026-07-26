@@ -37,9 +37,10 @@ unreal/
 2. In **Edit → Plugins**, confirm **Learning Agents** and **NNE / NNERuntimeORT** are
    enabled (the `.uproject` requests them).
 3. Drop an **`ARollerManager`** actor into a level (a simple plane with some spawned
-   pawns). Set `bTraining = true`, press **Play** — the in-engine PPO trainer starts.
+   pawns) and pick a **`Mode`** on it: `Train`, `Record`, `Imitate`, or `Inference`.
+   Press **Play**.
 
-## Human feedback during training (Situation A)
+## Human feedback during training (`Mode = Train`)
 
 While training runs, press —
 
@@ -51,8 +52,20 @@ While training runs, press —
 `RollerManager` captures the key and adds to `Trainer->HumanReward`;
 `UMoveTrainer::GatherAgentReward` folds that into the reward PPO optimizes and consumes
 it — so your feedback directly shapes the learned policy (the same human-in-the-loop
-idea as the Unity project). Imitation learning (recording human demos) is also supported
-by Learning Agents via its recorder/BC components — see the docs.
+idea as the Unity project).
+
+## Record demonstrations, then imitate (`Mode = Record` → `Mode = Imitate`)
+
+The other way to inject human input — the Unreal counterpart of the Unity demo recorder:
+
+1. **Record.** Set `Mode = Record`, press **Play**. One agent spawns; **drive it with
+   WASD**. Press **`R`** to start capturing and **`R`** again to stop — `RollerManager`
+   drives the recorder (`BeginRecording` / `AddExperience` each tick / `EndRecording`)
+   and stores a **`ULearningAgentsRecording`**. Your WASD becomes the performed action
+   via `MoveInteractor.bUseHumanActions`, so the recording is genuinely your play.
+2. **Imitate.** Set `Mode = Imitate` (with the recording assigned), press **Play**. A
+   **`ULearningAgentsImitationTrainer`** teaches the policy to copy your demonstrations
+   (behavioral cloning). Then switch to `Mode = Inference` to run the result.
 
 ## Inference (ship the trained brain)
 

@@ -1,5 +1,14 @@
 # Engine Integration · 引擎集成
 
+![RollerBall — an RL agent learning to reach the target, with live human feedback](media/rollerball.gif)
+
+*The RollerBall task both projects implement: an agent learns (RL) to roll to the target,
+its reward/episode counters climb, and pressing `+` / `-` folds live **human feedback**
+into the reward. (An illustrative rendering of the task, not a capture of the engine.)*
+
+*两个项目都实现的 RollerBall 任务：智能体（强化学习）学习滚向目标，奖励/回合计数上升，
+按 `+` / `-` 把实时**人类反馈**折入奖励。（这是对该任务的示意渲染，非引擎实机录制。）*
+
 How learned AI actually ships in a game: **train a model, then run it in the engine.**
 The runnable samples in [`../samples`](../samples) teach the *algorithms* in Python;
 this folder shows how the *learned* ones plug into real engines in their own languages.

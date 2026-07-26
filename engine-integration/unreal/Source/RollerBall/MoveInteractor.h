@@ -40,4 +40,10 @@ public:
 
     // The goal each agent is trying to reach (set by RollerManager).
     UPROPERTY() TMap<int32, FVector> Goals;
+
+    // RECORD MODE: when true, PerformAgentAction applies the human's action
+    // (from RollerManager's WASD input) instead of the policy's, so the recorder
+    // captures human demonstrations.
+    UPROPERTY() bool bUseHumanActions = false;
+    UPROPERTY() TMap<int32, FVector2D> HumanActions;
 };
