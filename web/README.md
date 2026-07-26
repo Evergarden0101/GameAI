@@ -1,21 +1,26 @@
 # Interactive Game AI Lab · 交互式游戏 AI 实验室
 
 [`gameai-lab.html`](gameai-lab.html) is a self-contained, single-file web page with
-**three live, interactive debug viewports** — the same algorithms as the Python
-samples, ported to the browser so you can watch and play with them:
+**seven live, PLAYABLE debug viewports** — the same algorithms as the Python
+samples, ported to the browser so you can control them and watch the AI react:
 
-一个自包含的单文件网页，内含**三个可交互的调试视图**——与 Python 示例相同的算法，
-移植到浏览器中，可实时观看与操作：
+一个自包含的单文件网页，内含**七个可交互、可操作的调试视图**——与 Python 示例相同的
+算法，移植到浏览器中，你可以亲自操控、并看 AI 如何反应：
 
-1. **Pac-Man ghost AI** — the four ghost personalities (Blinky / Pinky / Inky /
-   Clyde), scatter/chase modes, and each ghost's live target tile.
-   吃豆人四幽灵性格、追逐 / 散开模式，以及每个幽灵的实时目标格。
-2. **FPS suppress & flank** — an anchor pins the player while a flanker takes a
-   concealed path to a new angle (line-of-sight, cover, suppression).
-   FPS 火力压制与包抄：锚点压制、包抄手沿规避视线的路径迂回。
-3. **Unbeatable minimax** — a playable tic-tac-toe board that searches the whole
-   game tree and never loses. Try to beat it.
-   可对弈的“不可战胜”井字棋，搜索整棵博弈树，永不落败。
+1. **Pac-Man** — **you** drive (arrow keys / WASD / D-pad) while the four ghost
+   personalities (Blinky / Pinky / Inky / Clyde) hunt you. 亲自操控吃豆人，躲避四幽灵。
+2. **Boids flocking** — lead the swarm with your cursor. 用光标带领蜂群。
+3. **A\* pathfinding** — click to move the goal, or draw your own walls and watch it
+   re-route. 点击移动目标，或自己画墙看它重新寻路。
+4. **FPS suppress & flank** — click a floor tile to reposition the defender; the
+   squad re-plans its flank. 点击地块重新部署防守者，小队随之重新规划包抄。
+5. **Minimax** — a playable board; unbeatable on *Perfect*, beatable on *Casual*.
+   可对弈的井字棋；“完美”不可战胜，“休闲”可被击败。
+6. **Q-learning** — click to place the goal/pit and watch the agent relearn live.
+   点击放置目标 / 陷阱，实时观看智能体重新学习。
+7. **Open-world streaming / LOD AI** — drive through the world, adjust the full-sim
+   radius and LLM "hero" NPCs, and watch the frame budget (the GTA-scale question).
+   驾车穿行，调节全模拟半径与 LLM 主角 NPC，观察帧预算（GTA 级难题）。
 
 ## Viewing · 查看方式
 

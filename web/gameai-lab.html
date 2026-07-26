@@ -42,7 +42,6 @@
   .mono{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
   .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 
-  /* hero */
   header.hero{padding:64px 0 30px;border-bottom:1px solid var(--line)}
   .eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.18em;
     text-transform:uppercase;color:var(--accent);display:flex;gap:10px;align-items:center}
@@ -56,7 +55,6 @@
     border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:var(--panel)}
   .chip b{color:var(--ink);font-weight:600}
 
-  /* module */
   .module{padding:44px 0;border-bottom:1px solid var(--line)}
   .m-head{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
   .m-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;
@@ -68,28 +66,29 @@
   .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:26px;align-items:start}
   @media(max-width:800px){.grid{grid-template-columns:1fr}}
 
-  /* viewport (always dark screen) */
   .viewport{background:var(--viewport);border:1px solid var(--vp-line);border-radius:12px;
     padding:14px;position:relative;overflow:hidden}
   .viewport::before{content:"";position:absolute;inset:7px;border:1px solid rgba(255,255,255,.04);
     border-radius:8px;pointer-events:none}
   .vp-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
-    font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--hud);letter-spacing:.08em}
+    font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8299ad !important;letter-spacing:.08em}
+  .vp-bar span{color:#8299ad !important}
   .vp-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--good);display:inline-block;margin-right:6px;
     box-shadow:0 0 8px var(--good)}
-  canvas{display:block;width:100%;height:auto;image-rendering:auto;border-radius:4px}
-  /* viewport screens are always dark, so their inner text is theme-independent */
+  canvas{display:block;width:100%;height:auto;border-radius:4px}
+  canvas.play{touch-action:none;cursor:pointer}
+  canvas.play:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
   .hud{margin-top:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8299ad;
     min-height:18px;letter-spacing:.02em}
   .hud .k{color:#eaf1f8;font-weight:600}
-  .vp-bar,.vp-bar span{color:#8299ad !important}
 
-  /* controls / explainer panel */
   .panel h4{margin:0 0 4px;font-size:13px;font-family:ui-monospace,Menlo,monospace;
     text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
   .panel p{margin:0 0 14px;color:var(--muted);font-size:14.5px}
   .panel p strong{color:var(--ink);font-weight:650}
-  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+  .playhint{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--accent);
+    margin:0 0 12px !important;display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}
   button.ctl{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;cursor:pointer;
     background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;
     padding:8px 13px;transition:border-color .15s,background .15s,transform .05s}
@@ -99,13 +98,16 @@
   button.ctl[aria-pressed="true"]{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
   button.ctl:focus-visible,.board button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+  .dpad{display:grid;grid-template-areas:". u ." "l d r";gap:5px;width:max-content;margin:2px 0 14px}
+  .dpad .u{grid-area:u}.dpad .l{grid-area:l}.dpad .d{grid-area:d}.dpad .r{grid-area:r}
+  .dpad button{width:46px;height:34px;font-size:16px}
+
   .legend{display:flex;flex-direction:column;gap:7px;margin-top:4px}
   .legend .row{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
   .legend .sw{width:13px;height:13px;border-radius:3px;margin-top:4px;flex:0 0 auto}
   .legend .row span{color:var(--muted)}
   .legend .row b{color:var(--ink)}
 
-  /* tic-tac-toe board */
   .board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:0 auto}
   .board button{aspect-ratio:1;font-size:40px;font-weight:700;font-family:ui-monospace,Menlo,monospace;
     background:var(--viewport);border:1px solid var(--vp-line);border-radius:10px;cursor:pointer;
@@ -126,12 +128,12 @@
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow mono">Game AI · Debug Viewports</div>
-    <h1>Watch the algorithms <span class="hl">think</span>.</h1>
-    <p class="lede">Seven interactive debug views of the classic and not-so-classic AI behind game
-      characters — from Pac-Man's ghosts to an open-world streaming budget — the same techniques
-      dissected in the companion book and runnable Python. Poke them, pause them, and try to beat the
-      one that can't be beaten.</p>
+    <div class="eyebrow mono">Game AI · Playable Debug Viewports</div>
+    <h1>Don't just watch the AI — <span class="hl">play</span> it.</h1>
+    <p class="lede">Seven interactive debug views of the AI behind game characters. Steer Pac-Man while the
+      ghosts hunt <em>you</em>, lead a flock with your cursor, draw walls for a pathfinder to solve, move
+      the goal and watch an agent relearn, and drive through a streaming open world — the same techniques
+      dissected in the companion book and runnable Python, all at one link.</p>
     <div class="hero-meta mono">
       <span class="chip"><b>movement</b> &nbsp;ghosts · flocking · A*</span>
       <span class="chip"><b>tactics</b> &nbsp;suppress &amp; flank</span>
@@ -142,84 +144,89 @@
   </div>
 </header>
 
-<!-- ───────────────── MODULE 01 · PAC-MAN ───────────────── -->
+<!-- ── 01 · PAC-MAN ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
-      <div class="m-eyebrow mono">Movement &amp; personality · <b>finite state machines</b></div>
-      <h2 class="m-title">Four ghosts, four one-line rules</h2>
-      <p class="m-sub">Every ghost runs the identical routine — step toward your own "target tile",
-        never reverse. The personalities live entirely in <em>how the target is chosen</em>. Toggle the
-        target markers to see each ghost's intent.</p>
+      <div class="m-eyebrow mono">Movement &amp; personality · <b>you vs. four state machines</b></div>
+      <h2 class="m-title">Outrun the four ghost personalities</h2>
+      <p class="m-sub"><strong>You</strong> are Pac-Man. Each ghost runs one one-line targeting rule —
+        Blinky chases you, Pinky cuts ahead, Inky pincers, Clyde is shy. Eat the dots without getting
+        cornered, and toggle the target markers to see each ghost's intent.</p>
     </div>
     <div class="grid">
       <div class="viewport">
         <div class="vp-bar mono"><span><span class="dot"></span>PACMAN.SIM</span><span id="pac-mode">CHASE</span></div>
-        <canvas id="pac-canvas" width="450" height="330" aria-label="Pac-Man ghost AI simulation"></canvas>
-        <div class="hud mono" id="pac-hud">Ghosts hunting…</div>
+        <canvas id="pac-canvas" class="play" tabindex="0" width="450" height="330" aria-label="Play Pac-Man against ghost AI"></canvas>
+        <div class="hud mono" id="pac-hud">Score 0 · Lives 3</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">🎮 <span>Click the view, then steer with <b>arrow keys / WASD</b> — or use the D-pad.</span></p>
         <div class="controls">
           <button class="ctl pri" id="pac-play">Pause</button>
-          <button class="ctl" id="pac-step">Step</button>
+          <button class="ctl" id="pac-new">New game</button>
           <button class="ctl" id="pac-targets" aria-pressed="true">Targets: on</button>
         </div>
+        <div class="dpad" aria-label="Pac-Man movement">
+          <button class="ctl u" data-d="up" aria-label="up">↑</button>
+          <button class="ctl l" data-d="left" aria-label="left">←</button>
+          <button class="ctl d" data-d="down" aria-label="down">↓</button>
+          <button class="ctl r" data-d="right" aria-label="right">→</button>
+        </div>
         <div class="legend">
-          <div class="row"><span class="sw" style="background:#ff5a5a"></span><span><b>Blinky</b> — targets your tile. The relentless chaser, always on your tail.</span></div>
-          <div class="row"><span class="sw" style="background:#ffb6dc"></span><span><b>Pinky</b> — targets 4 tiles <em>ahead</em> of you, trying to cut you off.</span></div>
-          <div class="row"><span class="sw" style="background:#4ce0e0"></span><span><b>Inky</b> — aims at a point reflected through Blinky, for erratic pincers.</span></div>
-          <div class="row"><span class="sw" style="background:#ffb84d"></span><span><b>Clyde</b> — chases when far, but flees to his corner when he gets close.</span></div>
+          <div class="row"><span class="sw" style="background:#ff5a5a"></span><span><b>Blinky</b> — targets your tile.</span></div>
+          <div class="row"><span class="sw" style="background:#ffb6dc"></span><span><b>Pinky</b> — targets 4 tiles ahead of you.</span></div>
+          <div class="row"><span class="sw" style="background:#4ce0e0"></span><span><b>Inky</b> — a point reflected through Blinky.</span></div>
+          <div class="row"><span class="sw" style="background:#ffb84d"></span><span><b>Clyde</b> — chases far, flees when close.</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────── MODULE 02 · FPS ───────────────── -->
+<!-- ── 02 · FPS ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
       <div class="m-eyebrow mono">Tactical squad AI · <b>line-of-sight · cover · suppression</b></div>
-      <h2 class="m-title">Fire and maneuver</h2>
-      <p class="m-sub">The core loop of shooter squad AI from <em>Doom</em> to <em>F.E.A.R.</em>: the
-        <b style="color:var(--accent)">anchor</b> pins the player with suppressing fire so they tunnel-vision on the
-        visible threat, while the <b style="color:var(--accent-2)">flanker</b> takes a concealed path to a new angle
-        for the kill.</p>
+      <h2 class="m-title">Can you out-position the flank?</h2>
+      <p class="m-sub"><strong>Click any floor tile</strong> to place the defender (you). The
+        <b style="color:var(--accent)">anchor</b> pins you with suppressing fire while the
+        <b style="color:var(--accent-2)">flanker</b> hugs cover to a new angle. Find a spot they can't
+        flank — or watch fire-and-maneuver break every one.</p>
     </div>
     <div class="grid">
       <div class="viewport">
         <div class="vp-bar mono"><span><span class="dot"></span>TACTICS.SIM</span><span id="fps-tick">t=0</span></div>
-        <canvas id="fps-canvas" width="460" height="253" aria-label="FPS tactical squad AI simulation"></canvas>
-        <div class="hud mono" id="fps-hud">Squad advancing…</div>
+        <canvas id="fps-canvas" class="play" width="460" height="253" aria-label="Reposition the defender against squad AI"></canvas>
+        <div class="hud mono" id="fps-hud">Click a floor tile to deploy.</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">🎯 <span>Tap a floor tile to (re)deploy the defender; the squad re-plans its assault.</span></p>
         <div class="controls">
           <button class="ctl pri" id="fps-play">Pause</button>
-          <button class="ctl" id="fps-step">Step</button>
           <button class="ctl" id="fps-reset">Replay</button>
         </div>
         <div class="legend">
-          <div class="row"><span class="sw" style="background:#f5a623"></span><span><b>Player</b> — a dug-in defender. Return fire is strong… until suppression pins them.</span></div>
-          <div class="row"><span class="sw" style="background:#38bdf8"></span><span><b>Anchor</b> — moves to a firing position and <em>suppresses</em>, drawing the player's attention.</span></div>
-          <div class="row"><span class="sw" style="background:#a78bfa"></span><span><b>Flanker</b> — hugs cover (dashed path) to reach an unguarded bearing, then fires.</span></div>
-          <div class="row"><span class="sw" style="background:#2b3a4b"></span><span><b>Walls</b> — hard cover that blocks movement <em>and</em> line-of-sight.</span></div>
+          <div class="row"><span class="sw" style="background:#f5a623"></span><span><b>You</b> — the defender. Strong return fire, until pinned.</span></div>
+          <div class="row"><span class="sw" style="background:#38bdf8"></span><span><b>Anchor</b> — suppresses to fix you in place.</span></div>
+          <div class="row"><span class="sw" style="background:#a78bfa"></span><span><b>Flanker</b> — takes a concealed angle for the kill.</span></div>
+          <div class="row"><span class="sw" style="background:#2b3a4b"></span><span><b>Walls</b> — block movement and sight.</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────── MODULE 03 · MINIMAX ───────────────── -->
+<!-- ── 03 · MINIMAX ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
       <div class="m-eyebrow mono">Adversarial search · <b>minimax + alpha-beta</b></div>
-      <h2 class="m-title">The opponent that cannot lose</h2>
-      <p class="m-sub">This board searches the entire game tree with minimax and plays perfectly. The best
-        you can do is force a draw — which is the whole point of the algorithm behind Deep Blue.
-        Go ahead, try to win.</p>
+      <h2 class="m-title">Try to beat the search</h2>
+      <p class="m-sub">On <em>Perfect</em>, this board searches the whole game tree and cannot lose — the
+        best you can force is a draw. Drop it to <em>Casual</em> and it plays loose, so you can actually
+        win. Your move.</p>
     </div>
     <div class="grid">
       <div class="viewport" style="display:flex;flex-direction:column;justify-content:center">
@@ -228,145 +235,149 @@
         <div class="verdict mono" id="ttt-verdict">You are X. Your move.</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">✊ <span>Click a square to play X. The AI replies as O.</span></p>
         <div class="controls">
           <button class="ctl pri" id="ttt-new">New game</button>
+          <button class="ctl" id="ttt-level">AI: Perfect</button>
           <button class="ctl" id="ttt-first" aria-pressed="false">AI moves first</button>
         </div>
-        <p>Each time the AI moves it runs <strong>minimax</strong>: it assumes you'll play optimally,
-          scores every reachable end-state, and picks the move with the best guaranteed outcome.
-          <strong>Alpha-beta pruning</strong> skips branches that can't change the choice — the
-          <span class="mono">nodes</span> counter shows how many positions it actually evaluated.</p>
-        <p style="margin-bottom:0">Result over many games against any opponent: it <strong>never loses</strong>.
-          Perfect play from both sides is always a draw.</p>
+        <p>Each AI move runs <strong>minimax</strong> with <strong>alpha-beta pruning</strong>; the
+          <span class="mono">nodes</span> counter is how many positions it evaluated. On Perfect it is
+          unbeatable — perfect play from both sides is always a draw.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────── MODULE 04 · BOIDS ───────────────── -->
+<!-- ── 04 · BOIDS ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
       <div class="m-eyebrow mono">Movement &amp; swarms · <b>flocking (boids)</b></div>
-      <h2 class="m-title">A swarm with no leader</h2>
-      <p class="m-sub">Each dot follows three local rules — <em>separation</em>, <em>alignment</em>,
-        <em>cohesion</em> — plus a pull toward the target. The coordinated flock isn't scripted; it
-        <em>emerges</em> from every boid obeying the same rules with no central brain.</p>
+      <h2 class="m-title">Lead the swarm with your cursor</h2>
+      <p class="m-sub"><strong>Move your pointer over the view</strong> and the flock chases it. Each dot
+        follows only three local rules — separation, alignment, cohesion — yet the coordinated pack
+        <em>emerges</em> with no central brain.</p>
     </div>
     <div class="grid">
       <div class="viewport">
         <div class="vp-bar mono"><span><span class="dot"></span>BOIDS.SIM</span><span id="boid-count">60 boids</span></div>
-        <canvas id="boid-canvas" width="460" height="300" aria-label="Boids flocking simulation"></canvas>
-        <div class="hud mono" id="boid-hud">Flocking…</div>
+        <canvas id="boid-canvas" class="play" width="460" height="300" aria-label="Lead a flock of boids with the cursor"></canvas>
+        <div class="hud mono" id="boid-hud">Move your cursor to lead the flock.</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">🖱️ <span>Move (or drag on touch) over the view to lead the pack.</span></p>
         <div class="controls">
           <button class="ctl pri" id="boid-play">Pause</button>
-          <button class="ctl" id="boid-seek" aria-pressed="true">Hunt target: on</button>
+          <button class="ctl" id="boid-seek" aria-pressed="true">Hunt cursor: on</button>
           <button class="ctl" id="boid-scatter">Scatter</button>
         </div>
-        <p>Move nothing and watch order appear from local rules alone. With <strong>hunt</strong> on, a
-          fourth "seek" rule turns the flock into a coordinated pack — the classic way games move bats,
-          fish, or a cloud of drones cheaply.</p>
+        <p>With <strong>hunt</strong> on, a fourth "seek" rule aims the whole flock at your cursor — the
+          classic cheap way games move bats, fish, or a cloud of drones as a coordinated group.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────── MODULE 05 · A* ───────────────── -->
+<!-- ── 05 · A* ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
       <div class="m-eyebrow mono">Movement &amp; navigation · <b>A\* pathfinding</b></div>
-      <h2 class="m-title">Finding the way, tile by tile</h2>
-      <p class="m-sub">The pursuer runs <strong>A*</strong> every step to chase a moving target around
-        walls. The faint cells are the search <em>frontier</em> it explored; the bright line is the
-        shortest path it committed to — re-planned continuously as the target flees.</p>
+      <h2 class="m-title">Move the goal, build the maze</h2>
+      <p class="m-sub"><strong>Click to move the goal</strong>; the pursuer re-runs <strong>A*</strong>
+        every step to reach it. Switch to <em>Walls</em> and draw your own maze — watch it re-route
+        instantly. Faint cells are the search frontier; the bright line is the shortest path.</p>
     </div>
     <div class="grid">
       <div class="viewport">
         <div class="vp-bar mono"><span><span class="dot"></span>ASTAR.SIM</span><span id="astar-nodes">expanded: 0</span></div>
-        <canvas id="astar-canvas" width="450" height="330" aria-label="A star pathfinding simulation"></canvas>
-        <div class="hud mono" id="astar-hud">Pathfinding…</div>
+        <canvas id="astar-canvas" class="play" width="450" height="330" aria-label="Set the goal and draw walls for A star"></canvas>
+        <div class="hud mono" id="astar-hud">Click to place the goal.</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">🧭 <span>Tap to move the goal · switch to <b>Walls</b> to draw obstacles.</span></p>
         <div class="controls">
           <button class="ctl pri" id="astar-play">Pause</button>
-          <button class="ctl" id="astar-step">Step</button>
+          <button class="ctl" id="astar-mode">Mode: Goal</button>
+          <button class="ctl" id="astar-clear">Clear walls</button>
           <button class="ctl" id="astar-search" aria-pressed="true">Show search: on</button>
         </div>
-        <p>A* expands the frontier cell with the best <span class="mono">f = g + h</span> score —
-          balancing distance travelled against an estimate of distance remaining. The
-          <span class="mono">expanded</span> counter is how many cells it touched to find each path.</p>
+        <p>A* expands the frontier cell with the best <span class="mono">f = g + h</span> — distance
+          travelled plus an estimate of distance remaining. The <span class="mono">expanded</span> count
+          is how many cells it touched for each path.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────── MODULE 06 · Q-LEARNING ───────────────── -->
+<!-- ── 06 · Q-LEARNING ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
       <div class="m-eyebrow mono">Learning · <b>reinforcement learning</b></div>
-      <h2 class="m-title">An agent learning, live</h2>
-      <p class="m-sub">Tabular <strong>Q-learning</strong> trains in real time on a grid world: reach the
-        goal (green) for reward, fall in the pit (red) for a penalty. Watch the value map light up and the
-        policy arrows snap into a route — learned from reward alone, no map given.</p>
+      <h2 class="m-title">Set the goal, watch it learn</h2>
+      <p class="m-sub"><strong>Click any cell to move the goal</strong> (or the pit) and the agent relearns
+        from scratch. Tabular <strong>Q-learning</strong> trains live: the value map lights up and the
+        policy arrows snap into a route to <em>your</em> goal — from reward alone, no map given.</p>
     </div>
     <div class="grid">
       <div class="viewport">
         <div class="vp-bar mono"><span><span class="dot"></span>QLEARN.SIM</span><span id="q-ep">episode 0</span></div>
-        <canvas id="q-canvas" width="420" height="300" aria-label="Q-learning grid world"></canvas>
-        <div class="hud mono" id="q-hud">Training…</div>
+        <canvas id="q-canvas" class="play" width="420" height="300" aria-label="Place the goal for a Q-learning agent"></canvas>
+        <div class="hud mono" id="q-hud">Click a cell to move the goal.</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">🧠 <span>Tap a cell to place the <b>goal</b>; toggle to move the <b>pit</b>.</span></p>
         <div class="controls">
           <button class="ctl pri" id="q-play">Pause</button>
-          <button class="ctl" id="q-reset">Restart training</button>
+          <button class="ctl" id="q-mode">Place: Goal</button>
+          <button class="ctl" id="q-reset">Restart</button>
         </div>
-        <p>Each cell's shade is its learned value <span class="mono">max Q(s,a)</span> — brighter means
-          "closer to reward." The arrows are the greedy <strong>policy</strong>. Early on it's noise;
-          after a few hundred episodes a clean path to the goal emerges, skirting the pit.</p>
+        <p>Each cell's shade is its learned value <span class="mono">max Q(s,a)</span> (brighter = closer
+          to reward); the arrows are the greedy <strong>policy</strong>. Move the goal and watch a fresh
+          route converge in a few hundred episodes.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ───────────────── MODULE 07 · OPEN WORLD ───────────────── -->
+<!-- ── 07 · OPEN WORLD ── -->
 <section class="module">
   <div class="wrap">
     <div class="m-head">
       <div class="m-eyebrow mono">Scale &amp; performance · <b>open-world streaming &amp; LOD AI</b></div>
-      <h2 class="m-title">How a whole city fits in the budget</h2>
-      <p class="m-sub">The trick behind GTA-scale crowds: a <strong>population system</strong> spawns NPCs
-        around the player and despawns them out of range, and <strong>LOD AI</strong> gives full brains
-        only to those close enough to matter. Push the full-sim radius (or add LLM "hero" NPCs) and watch
-        the frame budget — and the graceful degradation.</p>
+      <h2 class="m-title">Drive the GTA-scale budget</h2>
+      <p class="m-sub"><strong>Drive the player</strong> and watch NPCs stream in ahead and despawn behind,
+        up to a density cap. <strong>LOD AI</strong> gives full brains only to those in range. Widen the
+        full-sim radius or add LLM "hero" NPCs and watch the frame budget — and the graceful degradation.</p>
     </div>
     <div class="grid">
       <div class="viewport">
         <div class="vp-bar mono"><span><span class="dot"></span>OPENWORLD.SIM</span><span id="ow-pop">pop 0</span></div>
-        <canvas id="ow-canvas" width="460" height="330" aria-label="Open world streaming and LOD AI simulation"></canvas>
-        <div class="hud mono" id="ow-hud">Streaming…</div>
+        <canvas id="ow-canvas" class="play" tabindex="0" width="460" height="330" aria-label="Drive through a streaming open world"></canvas>
+        <div class="hud mono" id="ow-hud">Drive to stream the world.</div>
       </div>
       <div class="panel">
-        <h4>Controls</h4>
+        <p class="playhint">🚗 <span>Click the view + <b>arrow keys</b>, use the D-pad, or drag to drive.</span></p>
         <div class="controls">
           <button class="ctl pri" id="ow-play">Pause</button>
-          <button class="ctl" id="ow-llm" aria-pressed="false">LLM hero NPCs: off</button>
+          <button class="ctl" id="ow-llm" aria-pressed="false">LLM heroes: off</button>
+        </div>
+        <div class="dpad" aria-label="Drive">
+          <button class="ctl u" data-d="up" aria-label="up">↑</button>
+          <button class="ctl l" data-d="left" aria-label="left">←</button>
+          <button class="ctl d" data-d="down" aria-label="down">↓</button>
+          <button class="ctl r" data-d="right" aria-label="right">→</button>
         </div>
         <label class="mono" style="display:block;font-size:12px;color:var(--muted);margin:2px 0 14px">
           Full-sim radius
           <input id="ow-radius" type="range" min="60" max="200" value="110" style="width:100%;margin-top:6px">
         </label>
         <div class="legend">
-          <div class="row"><span class="sw" style="background:#38bdf8"></span><span><b>Full-sim</b> — near the player: complete AI, physics, animation.</span></div>
-          <div class="row"><span class="sw" style="background:#7c8aa0"></span><span><b>Simplified</b> — mid-range: cheap "dummy" behaviour on path nodes.</span></div>
-          <div class="row"><span class="sw" style="background:#33404f"></span><span><b>Streamed-out</b> — beyond range: not simulated at all (despawned).</span></div>
+          <div class="row"><span class="sw" style="background:#38bdf8"></span><span><b>Full-sim</b> — near you: complete AI &amp; physics.</span></div>
+          <div class="row"><span class="sw" style="background:#7c8aa0"></span><span><b>Simplified</b> — mid-range: cheap dummy behaviour.</span></div>
+          <div class="row"><span class="sw" style="background:#33404f"></span><span><b>Streamed-out</b> — beyond range: despawned.</span></div>
         </div>
       </div>
     </div>
@@ -375,508 +386,327 @@
 
 <footer>
   <div class="wrap">
-    Interactive companion to <b>Game AI: From Pac-Man to GT Sophy</b>. Each viewport is a live port of a
-    runnable Python sample from the GameAI repository — ghost personalities, boids, A* pathfinding, tactical
-    squads, minimax, Q-learning, and an open-world streaming/LOD budget — spanning movement, tactics,
-    search, learning, and scale.
+    Interactive companion to <b>Game AI: From Pac-Man to GT Sophy</b>. Each viewport is a live, playable
+    port of a runnable Python sample from the GameAI repository — spanning movement, tactics, search,
+    learning, and open-world scale.
   </div>
 </footer>
 
 <script>
 "use strict";
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function cpos(cv,e){ const r=cv.getBoundingClientRect();
+  return {x:(e.clientX-r.left)/r.width*cv.width, y:(e.clientY-r.top)/r.height*cv.height}; }
+function holdDir(container, onDir){ // wire a D-pad: press-and-hold sets a direction
+  container.querySelectorAll("button[data-d]").forEach(b=>{
+    const d=b.dataset.d;
+    b.addEventListener("pointerdown",ev=>{ev.preventDefault(); onDir(d,true);});
+    b.addEventListener("pointerup",()=>onDir(d,false));
+    b.addEventListener("pointerleave",()=>onDir(d,false));
+    b.addEventListener("pointercancel",()=>onDir(d,false));
+  });
+}
 
-/* ==================================================================== */
-/* MODULE 01 — PAC-MAN GHOST AI                                          */
-/* ==================================================================== */
+/* ===================== 01 — PAC-MAN (you play) ===================== */
 (function(){
   const MAZE=[
     "###############","#......#......#","#.####.#.####.#","#.............#",
     "#.####.#.####.#","#......#......#","#.####.#.####.#","#.............#",
     "#.####.#.####.#","#......P......#","###############"];
-  const W=MAZE[0].length, H=MAZE.length, TS=30;
-  const cv=document.getElementById("pac-canvas"), ctx=cv.getContext("2d");
-  cv.width=W*TS; cv.height=H*TS;
-  const isWall=(x,y)=> x<0||y<0||x>=W||y>=H||MAZE[y][x]==="#";
-  const UP=[0,-1],LEFT=[-1,0],DOWN=[0,1],RIGHT=[1,0], DIRS=[UP,LEFT,DOWN,RIGHT];
-  const d2=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2;
-  const add=(p,d,k=1)=>[p[0]+d[0]*k,p[1]+d[1]*k];
-  const GH=[
-    {name:"BLINKY",col:"#ff5a5a",pos:[7,3],dir:UP,corner:[W-2,1]},
-    {name:"PINKY", col:"#ffb6dc",pos:[6,5],dir:UP,corner:[1,1]},
-    {name:"INKY",  col:"#4ce0e0",pos:[8,5],dir:UP,corner:[W-2,H-2]},
-    {name:"CLYDE", col:"#ffb84d",pos:[7,7],dir:UP,corner:[1,H-2]}];
-  let pac,pacDir,dots,step,running=!REDUCED,showTargets=true,caughtAt=-1;
-
-  function reset(){
-    pac=[7,9]; pacDir=LEFT; step=0; caughtAt=-1;
-    dots=new Set();
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(MAZE[y][x]==="."||MAZE[y][x]==="P") dots.add(x+","+y);
-    GH[0].pos=[7,3];GH[1].pos=[6,5];GH[2].pos=[8,5];GH[3].pos=[7,7];
-    GH.forEach(g=>g.dir=UP);
-  }
+  const W=MAZE[0].length,H=MAZE.length,TS=30;
+  const cv=document.getElementById("pac-canvas"),ctx=cv.getContext("2d"); cv.width=W*TS;cv.height=H*TS;
+  const wall=(x,y)=>x<0||y<0||x>=W||y>=H||MAZE[y][x]==="#";
+  const UP=[0,-1],LEFT=[-1,0],DOWN=[0,1],RIGHT=[1,0],DIRS=[UP,LEFT,DOWN,RIGHT];
+  const d2=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2, add=(p,d,k=1)=>[p[0]+d[0]*k,p[1]+d[1]*k];
+  const GH=[{n:"BLINKY",c:"#ff5a5a",p:[7,3],d:UP,corner:[W-2,1]},
+            {n:"PINKY",c:"#ffb6dc",p:[6,5],d:UP,corner:[1,1]},
+            {n:"INKY",c:"#4ce0e0",p:[8,5],d:UP,corner:[W-2,H-2]},
+            {n:"CLYDE",c:"#ffb84d",p:[7,7],d:UP,corner:[1,H-2]}];
+  let pac,dir,want,face,dots,step,score,lives,running=!REDUCED,showT=true,state,flash;
+  function place(){ pac=[7,9]; dir=[0,0]; want=null; face=LEFT;
+    GH[0].p=[7,3];GH[1].p=[6,5];GH[2].p=[8,5];GH[3].p=[7,7]; GH.forEach(g=>g.d=UP); flash=0; }
+  function newgame(){ place(); score=0; lives=3; step=0; state="play";
+    dots=new Set(); for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(MAZE[y][x]!=="#") dots.add(x+","+y);
+    dots.delete("7,9"); }
   const mode=()=> (Math.floor(step/7)%3===0)?"SCATTER":"CHASE";
-
-  function targetFor(g,m){
-    if(m==="SCATTER") return g.corner;
-    if(g.name==="BLINKY") return pac;
-    if(g.name==="PINKY")  return add(pac,pacDir,4);
-    if(g.name==="INKY"){ const p=add(pac,pacDir,2); return [2*p[0]-GH[0].pos[0],2*p[1]-GH[0].pos[1]]; }
-    return d2(g.pos,pac)>64 ? pac : g.corner; // CLYDE
-  }
-  function ghostStep(g,t){
-    const rev=[-g.dir[0],-g.dir[1]]; let best=null,bd=1e9;
-    for(const d of DIRS){
-      if(d[0]===rev[0]&&d[1]===rev[1]) continue;
-      const n=add(g.pos,d); if(isWall(n[0],n[1])) continue;
-      const dd=d2(n,t); if(dd<bd){bd=dd;best=d;}
-    }
-    if(!best) best=rev;
-    g.dir=best; g.pos=add(g.pos,best);
-  }
-  function pacStep(){
-    const rev=[-pacDir[0],-pacDir[1]];
-    let nearest=GH[0]; for(const g of GH) if(d2(g.pos,pac)<d2(nearest.pos,pac)) nearest=g;
-    const opts=[];
-    for(const d of DIRS){ const n=add(pac,d); if(!isWall(n[0],n[1])) opts.push([d,n]); }
-    opts.sort((a,b)=>{
-      const da=d2(a[1],nearest.pos), db=d2(b[1],nearest.pos);
-      if(db!==da) return db-da;
-      return (a[0][0]===rev[0]&&a[0][1]===rev[1]?1:0)-(b[0][0]===rev[0]&&b[0][1]===rev[1]?1:0);
-    });
-    pacDir=opts[0][0]; pac=opts[0][1]; dots.delete(pac[0]+","+pac[1]);
-  }
+  function tgt(g,m){ if(m==="SCATTER")return g.corner;
+    if(g.n==="BLINKY")return pac; if(g.n==="PINKY")return add(pac,face,4);
+    if(g.n==="INKY"){const p=add(pac,face,2);return[2*p[0]-GH[0].p[0],2*p[1]-GH[0].p[1]];}
+    return d2(g.p,pac)>64?pac:g.corner; }
+  function gstep(g,t){ const rev=[-g.d[0],-g.d[1]]; let b=null,bd=1e9;
+    for(const d of DIRS){ if(d[0]===rev[0]&&d[1]===rev[1])continue; const n=add(g.p,d);
+      if(wall(n[0],n[1]))continue; const dd=d2(n,t); if(dd<bd){bd=dd;b=d;} }
+    if(!b)b=rev; g.d=b; g.p=add(g.p,b); }
   function tick(){
-    if(caughtAt>=0){ if(step-caughtAt>4){reset();} else step++; return; }
-    step++; pacStep();
+    if(state!=="play"){ return; }
+    if(flash>0){ flash--; if(flash===0) place(); return; }
+    step++;
+    if(want){ const nx=add(pac,want); if(!wall(nx[0],nx[1])){ dir=want; face=want; } }
+    const nx=add(pac,dir);
+    if(dir[0]||dir[1]){ if(!wall(nx[0],nx[1])){ pac=nx; if(dots.delete(pac[0]+","+pac[1])) score+=10; } }
     const m=mode();
-    for(const g of GH) ghostStep(g,targetFor(g,m));
+    for(const g of GH) gstep(g,tgt(g,m));
     document.getElementById("pac-mode").textContent=m;
-    if(GH.some(g=>g.pos[0]===pac[0]&&g.pos[1]===pac[1])){
-      caughtAt=step;
-      const who=GH.find(g=>g.pos[0]===pac[0]&&g.pos[1]===pac[1]);
-      document.getElementById("pac-hud").innerHTML="Caught by <span class='k'>"+who.name+"</span> — the pincer closed. Resetting…";
-    } else {
-      document.getElementById("pac-hud").innerHTML="Mode <span class='k'>"+m+"</span> · dots left <span class='k'>"+dots.size+"</span>";
-    }
-    if(dots.size===0) reset();
+    const hit=GH.find(g=>g.p[0]===pac[0]&&g.p[1]===pac[1]);
+    const hud=document.getElementById("pac-hud");
+    if(hit){ lives--; flash=6;
+      if(lives<=0){ state="over"; hud.innerHTML="<span class='k'>GAME OVER</span> — score "+score+". Press New game."; }
+      else hud.innerHTML="Caught by <span class='k'>"+hit.n+"</span>! Lives left "+lives; return; }
+    if(dots.size===0){ state="win"; hud.innerHTML="<span class='k'>MAZE CLEARED!</span> Score "+score+". Nice."; return; }
+    hud.innerHTML="Score <span class='k'>"+score+"</span> · Lives <span class='k'>"+lives+"</span> · "+m;
   }
   function draw(){
     ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-      if(MAZE[y][x]==="#"){ ctx.fillStyle="#14346b";
-        ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4); }
-    }
-    ctx.fillStyle="#f4d06a";
-    for(const key of dots){ const [x,y]=key.split(",").map(Number);
-      ctx.beginPath(); ctx.arc(x*TS+TS/2,y*TS+TS/2,2.4,0,7); ctx.fill(); }
-    const m=mode();
-    if(showTargets){
-      for(const g of GH){ const t=targetFor(g,m);
-        const tx=Math.max(0,Math.min(W-1,t[0])), ty=Math.max(0,Math.min(H-1,t[1]));
-        ctx.strokeStyle=g.col; ctx.globalAlpha=.55; ctx.lineWidth=1.5;
-        ctx.strokeRect(tx*TS+5,ty*TS+5,TS-10,TS-10);
-        ctx.beginPath(); ctx.moveTo(tx*TS+9,ty*TS+9); ctx.lineTo(tx*TS+TS-9,ty*TS+TS-9);
-        ctx.moveTo(tx*TS+TS-9,ty*TS+9); ctx.lineTo(tx*TS+9,ty*TS+TS-9); ctx.stroke();
-        ctx.globalAlpha=1;
-      }
-    }
-    // pac
-    ctx.fillStyle="#ffd23f"; const cx=pac[0]*TS+TS/2, cy=pac[1]*TS+TS/2;
-    const ang=Math.atan2(pacDir[1],pacDir[0]);
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,TS*0.42,ang+0.35,ang-0.35); ctx.closePath(); ctx.fill();
-    // ghosts
-    for(const g of GH){
-      const gx=g.pos[0]*TS+TS/2, gy=g.pos[1]*TS+TS/2, r=TS*0.4;
-      ctx.fillStyle=g.col;
-      ctx.beginPath(); ctx.arc(gx,gy-2,r,Math.PI,0); ctx.lineTo(gx+r,gy+r-2);
-      for(let i=0;i<3;i++){ ctx.lineTo(gx+r-(i*2+1)*r/3,gy+r-6); ctx.lineTo(gx+r-(i*2+2)*r/3,gy+r-2); }
-      ctx.closePath(); ctx.fill();
-      ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(gx-r*0.35,gy-3,r*0.24,0,7);
-      ctx.arc(gx+r*0.35,gy-3,r*0.24,0,7); ctx.fill();
-    }
-    if(caughtAt>=0){ ctx.fillStyle="rgba(215,64,95,.18)"; ctx.fillRect(0,0,cv.width,cv.height); }
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(MAZE[y][x]==="#"){ctx.fillStyle="#14346b";ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4);}
+    ctx.fillStyle="#f4d06a"; for(const k of dots){const[x,y]=k.split(",").map(Number);ctx.beginPath();ctx.arc(x*TS+TS/2,y*TS+TS/2,2.4,0,7);ctx.fill();}
+    if(showT&&state==="play"){ const m=mode(); for(const g of GH){ const t=tgt(g,m);
+      const tx=Math.max(0,Math.min(W-1,t[0])),ty=Math.max(0,Math.min(H-1,t[1]));
+      ctx.strokeStyle=g.c;ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.strokeRect(tx*TS+6,ty*TS+6,TS-12,TS-12);ctx.globalAlpha=1;} }
+    const cx=pac[0]*TS+TS/2,cy=pac[1]*TS+TS/2,a=Math.atan2(face[1],face[0]);
+    ctx.fillStyle= flash>0 && flash%2? "#ffe9a8":"#ffd23f"; ctx.beginPath();ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,TS*0.42,a+0.35,a-0.35);ctx.closePath();ctx.fill();
+    for(const g of GH){ const gx=g.p[0]*TS+TS/2,gy=g.p[1]*TS+TS/2,r=TS*0.4; ctx.fillStyle=g.c;
+      ctx.beginPath();ctx.arc(gx,gy-2,r,Math.PI,0);ctx.lineTo(gx+r,gy+r-2);
+      for(let i=0;i<3;i++){ctx.lineTo(gx+r-(i*2+1)*r/3,gy+r-6);ctx.lineTo(gx+r-(i*2+2)*r/3,gy+r-2);}
+      ctx.closePath();ctx.fill(); ctx.fillStyle="#fff";
+      ctx.beginPath();ctx.arc(gx-r*.35,gy-3,r*.24,0,7);ctx.arc(gx+r*.35,gy-3,r*.24,0,7);ctx.fill(); }
+    if(state!=="play"){ ctx.fillStyle="rgba(8,13,19,.55)";ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.fillStyle="#e7eff7";ctx.font="700 26px ui-monospace,monospace";ctx.textAlign="center";
+      ctx.fillText(state==="win"?"CLEARED!":"GAME OVER",cv.width/2,cv.height/2);ctx.textAlign="left"; }
   }
-  let acc=0,last=0;
-  function loop(ts){ const dt=ts-last; last=ts;
-    if(running){ acc+=dt; if(acc>150){ acc=0; tick(); } }
-    draw(); requestAnimationFrame(loop);
-  }
-  document.getElementById("pac-play").onclick=e=>{ running=!running; e.target.textContent=running?"Pause":"Play"; };
-  document.getElementById("pac-step").onclick=()=>{ tick(); draw(); };
-  document.getElementById("pac-targets").onclick=e=>{ showTargets=!showTargets;
-    e.target.setAttribute("aria-pressed",showTargets); e.target.textContent="Targets: "+(showTargets?"on":"off"); };
-  reset(); if(REDUCED){document.getElementById("pac-play").textContent="Play"; draw();} requestAnimationFrame(loop);
+  const KEY={ArrowUp:UP,ArrowDown:DOWN,ArrowLeft:LEFT,ArrowRight:RIGHT,w:UP,s:DOWN,a:LEFT,d:RIGHT,W:UP,S:DOWN,A:LEFT,D:RIGHT};
+  cv.addEventListener("keydown",e=>{ if(KEY[e.key]){ e.preventDefault(); want=KEY[e.key]; } });
+  cv.addEventListener("pointerdown",()=>cv.focus());
+  holdDir(document.querySelector('.dpad[aria-label="Pac-Man movement"]'),(d)=>{ want={up:UP,down:DOWN,left:LEFT,right:RIGHT}[d]; });
+  let acc=0,last=0; function loop(ts){const dt=ts-last;last=ts; if(running){acc+=dt; if(acc>150){acc=0;tick();}} draw(); requestAnimationFrame(loop);}
+  document.getElementById("pac-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+  document.getElementById("pac-new").onclick=()=>{newgame();running=true;document.getElementById("pac-play").textContent="Pause";};
+  document.getElementById("pac-targets").onclick=e=>{showT=!showT;e.target.setAttribute("aria-pressed",showT);e.target.textContent="Targets: "+(showT?"on":"off");};
+  newgame(); if(REDUCED){document.getElementById("pac-play").textContent="Play";} draw(); requestAnimationFrame(loop);
 })();
 
-/* ==================================================================== */
-/* MODULE 02 — FPS SUPPRESS & FLANK                                     */
-/* ==================================================================== */
+/* ===================== 02 — FPS (click to deploy) ===================== */
 (function(){
-  const A=[
-    "####################","#..................#","#....########......#",
+  const A=["####################","#..................#","#....########......#",
     "#....#......#......#","#....#..P...+......#","#....#......#......#",
     "#....##+#####......#","#..................#","#..................#",
     "#..A............B..#","####################"];
   const W=A[0].length,H=A.length,TS=23;
-  const grid=[],start={};
-  for(let y=0;y<H;y++){ grid.push([]); for(let x=0;x<W;x++){ const c=A[y][x];
-    if(c==="P")start.P=[x,y]; else if(c==="A")start.A=[x,y]; else if(c==="B")start.B=[x,y];
-    grid[y].push(c==="#"?"#":".");
-  }}
-  const cv=document.getElementById("fps-canvas"),ctx=cv.getContext("2d");
-  cv.width=W*TS; cv.height=H*TS;
-  const isWall=(x,y)=> x<0||y<0||x>=W||y>=H||grid[y][x]==="#";
+  const grid=[],st={}; for(let y=0;y<H;y++){grid.push([]);for(let x=0;x<W;x++){const c=A[y][x];
+    if(c==="P")st.P=[x,y];else if(c==="A")st.A=[x,y];else if(c==="B")st.B=[x,y]; grid[y].push(c==="#"?"#":".");}}
+  const cv=document.getElementById("fps-canvas"),ctx=cv.getContext("2d"); cv.width=W*TS;cv.height=H*TS;
+  const wall=(x,y)=>x<0||y<0||x>=W||y>=H||grid[y][x]==="#";
   const man=(a,b)=>Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]);
-  function los(a,b){ let[x0,y0]=a,[x1,y1]=b; const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0);
-    const sx=x0<x1?1:-1,sy=y0<y1?1:-1; let err=dx-dy,x=x0,y=y0;
-    while(x!==x1||y!==y1){ const e2=2*err; if(e2>-dy){err-=dy;x+=sx;} if(e2<dx){err+=dx;y+=sy;}
-      if((x!==x1||y!==y1)&&isWall(x,y)) return false; } return true; }
-  function nbrs(x,y){ const r=[]; for(const[dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx,ny=y+dy;
-    if(!isWall(nx,ny)) r.push([nx,ny]); } return r; }
-  function dijkstra(s,g,pen,player){ if(s[0]===g[0]&&s[1]===g[1]) return s;
-    const key=p=>p[0]+","+p[1]; const dist={},first={}; dist[key(s)]=0; first[key(s)]=s;
-    const pq=[[0,s]];
-    while(pq.length){ pq.sort((a,b)=>a[0]-b[0]); const [d,c]=pq.shift();
-      if(c[0]===g[0]&&c[1]===g[1]) return first[key(c)];
-      if(d>(dist[key(c)]??1e9)) continue;
-      for(const n of nbrs(c[0],c[1])){ let stepc=1;
-        if(pen&&player&&los(n,player)) stepc+=pen;
-        const nd=d+stepc; if(nd<(dist[key(n)]??1e9)){ dist[key(n)]=nd;
-          first[key(n)]= (c[0]===s[0]&&c[1]===s[1])?n:first[key(c)]; pq.push([nd,n]); } } }
-    return s; }
-  function nearestFiring(s,player){ const key=p=>p[0]+","+p[1]; const seen={[key(s)]:1}; let fr=[s];
-    while(fr.length){ const nx=[]; for(const c of fr){ for(const n of nbrs(c[0],c[1])){ if(seen[key(n)])continue;
-      if(los(n,player)) return n; seen[key(n)]=1; nx.push(n); } } fr=nx; } return s; }
-  function bearing(f,t){ return Math.atan2(t[1]-f[1],t[0]-f[0]); }
-  function findFlank(player,anchor){ let best=null,bs=-1e9; const ab=bearing(player,anchor);
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++){ if(isWall(x,y)||!los([x,y],player)) continue;
-      const d=man([x,y],player); if(d<3) continue; const fb=bearing(player,[x,y]);
-      const spread=Math.abs(Math.atan2(Math.sin(fb-ab),Math.cos(fb-ab)));
-      const sc=spread*4-0.2*d; if(sc>bs){bs=sc;best=[x,y];} } return best||anchor; }
-
-  let anchor,flanker,player,tick,flankGoal,over,fpath;
-  function reset(){
-    anchor={pos:start.A.slice(),hp:120,state:"ADVANCE"};
-    flanker={pos:start.B.slice(),hp:120,state:"ADVANCE"};
-    player={pos:start.P.slice(),hp:100,supp:false};
-    tick=0; over=null; fpath=[]; flankGoal=findFlank(player.pos,anchor.pos);
-  }
-  function firstStep(from,to,pen){ return dijkstra(from,to,pen,pen?player.pos:null); }
-  function step(){
-    if(over){ if(tick-over.t>6) reset(); else tick++; return; }
-    tick++;
-    // anchor
-    if(anchor.hp>0){ if(los(anchor.pos,player.pos)){ anchor.state="SUPPRESS"; player.supp=true; player.hp-=4; }
-      else { anchor.state="ADVANCE"; anchor.pos=firstStep(anchor.pos,nearestFiring(anchor.pos,player.pos),0); } }
-    // flanker
-    if(flanker.hp>0){ if(flanker.pos[0]===flankGoal[0]&&flanker.pos[1]===flankGoal[1]&&los(flanker.pos,player.pos)){
-        flanker.state="FLANK-FIRE"; player.hp-= player.supp?26:15; }
-      else { flanker.state="FLANK-MOVE"; flanker.pos=firstStep(flanker.pos,flankGoal,6); } }
-    fpath=[flanker.pos.slice(),flankGoal.slice()];
-    // player return fire
-    if(player.hp>0){ if(player.supp&&anchor.hp>0&&los(player.pos,anchor.pos)) anchor.hp-=6;
-      else { const vis=[anchor,flanker].filter(s=>s.hp>0&&los(player.pos,s.pos));
-        if(vis.length){ vis.sort((a,b)=>man(player.pos,a.pos)-man(player.pos,b.pos)); vis[0].hp-=16; } } }
-    player.supp = anchor.state==="SUPPRESS"&&anchor.hp>0;
+  function los(a,b){let[x0,y0]=a,[x1,y1]=b;const dx=Math.abs(x1-x0),dy=Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;let e=dx-dy,x=x0,y=y0;
+    while(x!==x1||y!==y1){const e2=2*e;if(e2>-dy){e-=dy;x+=sx;}if(e2<dx){e+=dx;y+=sy;}if((x!==x1||y!==y1)&&wall(x,y))return false;}return true;}
+  function nbrs(x,y){const r=[];for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){if(!wall(x+dx,y+dy))r.push([x+dx,y+dy]);}return r;}
+  function dj(s,g,pen,pl){if(s[0]===g[0]&&s[1]===g[1])return s;const K=p=>p[0]+","+p[1];const dist={},first={};dist[K(s)]=0;first[K(s)]=s;const pq=[[0,s]];
+    while(pq.length){pq.sort((a,b)=>a[0]-b[0]);const[d,c]=pq.shift();if(c[0]===g[0]&&c[1]===g[1])return first[K(c)];if(d>(dist[K(c)]??1e9))continue;
+      for(const n of nbrs(c[0],c[1])){let sc=1;if(pen&&pl&&los(n,pl))sc+=pen;const nd=d+sc;if(nd<(dist[K(n)]??1e9)){dist[K(n)]=nd;first[K(n)]=(c[0]===s[0]&&c[1]===s[1])?n:first[K(c)];pq.push([nd,n]);}}}return s;}
+  function firing(s,pl){const K=p=>p[0]+","+p[1];const seen={[K(s)]:1};let fr=[s];while(fr.length){const nx=[];for(const c of fr){for(const n of nbrs(c[0],c[1])){if(seen[K(n)])continue;if(los(n,pl))return n;seen[K(n)]=1;nx.push(n);}}fr=nx;}return s;}
+  function be(f,t){return Math.atan2(t[1]-f[1],t[0]-f[0]);}
+  function flank(pl,an){let best=null,bs=-1e9;const ab=be(pl,an);for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(wall(x,y)||!los([x,y],pl))continue;const d=man([x,y],pl);if(d<3)continue;const fb=be(pl,[x,y]);const sp=Math.abs(Math.atan2(Math.sin(fb-ab),Math.cos(fb-ab)));const sc=sp*4-0.2*d;if(sc>bs){bs=sc;best=[x,y];}}return best||an;}
+  let anchor,flanker,player,tick,goal,over,fp,running=!REDUCED;
+  function reset(keep){ anchor={p:st.A.slice(),hp:120,s:"ADVANCE"}; flanker={p:st.B.slice(),hp:120,s:"ADVANCE"};
+    if(!keep) player={p:st.P.slice(),hp:100,supp:false}; else player.hp=100,player.supp=false;
+    tick=0;over=null;fp=[];goal=flank(player.p,anchor.p); }
+  function step(){ if(over){return;} tick++;
+    if(anchor.hp>0){ if(los(anchor.p,player.p)){anchor.s="SUPPRESS";player.supp=true;player.hp-=4;} else {anchor.s="ADVANCE";anchor.p=dj(anchor.p,firing(anchor.p,player.p),0);} }
+    if(flanker.hp>0){ if(flanker.p[0]===goal[0]&&flanker.p[1]===goal[1]&&los(flanker.p,player.p)){flanker.s="FLANK-FIRE";player.hp-=player.supp?26:15;} else {flanker.s="FLANK-MOVE";flanker.p=dj(flanker.p,goal,6,player.p);} }
+    fp=[flanker.p.slice(),goal.slice()];
+    if(player.hp>0){ if(player.supp&&anchor.hp>0&&los(player.p,anchor.p))anchor.hp-=6; else {const v=[anchor,flanker].filter(z=>z.hp>0&&los(player.p,z.p));if(v.length){v.sort((a,b)=>man(player.p,a.p)-man(player.p,b.p));v[0].hp-=16;}} }
+    player.supp=anchor.s==="SUPPRESS"&&anchor.hp>0;
     document.getElementById("fps-tick").textContent="t="+tick;
-    if(player.hp<=0){ over={t:tick,msg:"Objective neutralized — flank succeeded."}; }
-    else if(anchor.hp<=0&&flanker.hp<=0){ over={t:tick,msg:"Squad down — the defender held."}; }
-    const hud=document.getElementById("fps-hud");
-    if(over) hud.innerHTML="<span class='k'>"+over.msg+"</span>";
-    else hud.innerHTML="Anchor <span class='k'>"+anchor.state+"</span> · Flanker <span class='k'>"+flanker.state+"</span> · player HP <span class='k'>"+Math.max(0,player.hp)+"</span>"+(player.supp?" · <span class='k'>PINNED</span>":"");
+    if(player.hp<=0)over={m:"Objective neutralized — flank worked. Reposition to retry."};
+    else if(anchor.hp<=0&&flanker.hp<=0)over={m:"Squad down — you held! Move to try another spot."};
+    document.getElementById("fps-hud").innerHTML= over?"<span class='k'>"+over.m+"</span>":"Anchor <span class='k'>"+anchor.s+"</span> · Flanker <span class='k'>"+flanker.s+"</span> · HP <span class='k'>"+Math.max(0,player.hp)+"</span>"+(player.supp?" · PINNED":"");
   }
-  function cell(x,y){ return [x*TS+TS/2,y*TS+TS/2]; }
-  function draw(){
-    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++){ if(grid[y][x]==="#"){ ctx.fillStyle="#2b3a4b";
-      ctx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2); } }
-    // suppression beam
-    if(anchor.state==="SUPPRESS"&&anchor.hp>0&&(!over)){ const a=cell(anchor.pos[0],anchor.pos[1]),p=cell(player.pos[0],player.pos[1]);
-      ctx.strokeStyle="rgba(56,189,248,.5)"; ctx.lineWidth=2; ctx.setLineDash([3,4]);
-      ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(p[0],p[1]); ctx.stroke(); ctx.setLineDash([]); }
-    // flank path
-    if(flanker.hp>0&&fpath.length===2&&!over){ const f=cell(fpath[0][0],fpath[0][1]),g=cell(fpath[1][0],fpath[1][1]);
-      ctx.strokeStyle="rgba(167,139,250,.5)"; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
-      ctx.beginPath(); ctx.moveTo(f[0],f[1]); ctx.lineTo(g[0],g[1]); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle="rgba(167,139,250,.9)"; ctx.beginPath(); ctx.arc(g[0],g[1],3,0,7); ctx.fill(); }
-    // agents
-    function agent(pos,col,hp,max){ const [cx,cy]=cell(pos[0],pos[1]);
-      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(cx,cy,TS*0.34,0,7); ctx.fill();
-      ctx.fillStyle="rgba(0,0,0,.55)"; ctx.fillRect(cx-9,cy-TS*0.5,18,3);
-      ctx.fillStyle=col; ctx.fillRect(cx-9,cy-TS*0.5,18*Math.max(0,hp)/max,3); }
-    if(player.hp>0) agent(player.pos,"#f5a623",player.hp,100);
-    if(anchor.hp>0) agent(anchor.pos,"#38bdf8",anchor.hp,120);
-    if(flanker.hp>0) agent(flanker.pos,"#a78bfa",flanker.hp,120);
-    if(over){ ctx.fillStyle= over.msg[0]==="O"?"rgba(52,211,153,.16)":"rgba(215,64,95,.16)"; ctx.fillRect(0,0,cv.width,cv.height); }
+  const C=(x,y)=>[x*TS+TS/2,y*TS+TS/2];
+  function draw(){ ctx.fillStyle="#080d13";ctx.fillRect(0,0,cv.width,cv.height);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(grid[y][x]==="#"){ctx.fillStyle="#2b3a4b";ctx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2);}
+    if(anchor.s==="SUPPRESS"&&anchor.hp>0&&!over){const a=C(...anchor.p),p=C(...player.p);ctx.strokeStyle="rgba(56,189,248,.5)";ctx.lineWidth=2;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(p[0],p[1]);ctx.stroke();ctx.setLineDash([]);}
+    if(flanker.hp>0&&fp.length===2&&!over){const f=C(...fp[0]),g=C(...fp[1]);ctx.strokeStyle="rgba(167,139,250,.5)";ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(f[0],f[1]);ctx.lineTo(g[0],g[1]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="rgba(167,139,250,.9)";ctx.beginPath();ctx.arc(g[0],g[1],3,0,7);ctx.fill();}
+    function ag(p,col,hp,mx){const[cx,cy]=C(...p);ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,TS*.34,0,7);ctx.fill();ctx.fillStyle="rgba(0,0,0,.55)";ctx.fillRect(cx-9,cy-TS*.5,18,3);ctx.fillStyle=col;ctx.fillRect(cx-9,cy-TS*.5,18*Math.max(0,hp)/mx,3);}
+    if(player.hp>0)ag(player.p,"#f5a623",player.hp,100); if(anchor.hp>0)ag(anchor.p,"#38bdf8",anchor.hp,120); if(flanker.hp>0)ag(flanker.p,"#a78bfa",flanker.hp,120);
+    if(over){ctx.fillStyle=over.m[0]==="O"?"rgba(52,211,153,.14)":"rgba(215,64,95,.14)";ctx.fillRect(0,0,cv.width,cv.height);}
   }
-  let acc=0,last=0,running=!REDUCED;
-  function loop(ts){ const dt=ts-last; last=ts; if(running){ acc+=dt; if(acc>170){acc=0; step();} } draw(); requestAnimationFrame(loop); }
-  document.getElementById("fps-play").onclick=e=>{ running=!running; e.target.textContent=running?"Pause":"Play"; };
-  document.getElementById("fps-step").onclick=()=>{ step(); draw(); };
-  document.getElementById("fps-reset").onclick=()=>{ reset(); draw(); };
-  reset(); if(REDUCED){document.getElementById("fps-play").textContent="Play"; draw();} requestAnimationFrame(loop);
+  cv.addEventListener("pointerdown",e=>{const{x,y}=cpos(cv,e);const gx=Math.floor(x/TS),gy=Math.floor(y/TS);
+    if(!wall(gx,gy)){ player={p:[gx,gy],hp:100,supp:false}; reset(true); } });
+  let acc=0,last=0; function loop(ts){const dt=ts-last;last=ts;if(running){acc+=dt;if(acc>170){acc=0;step();}}draw();requestAnimationFrame(loop);}
+  document.getElementById("fps-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+  document.getElementById("fps-reset").onclick=()=>{reset(true);};
+  reset(false); if(REDUCED){document.getElementById("fps-play").textContent="Play";} draw(); requestAnimationFrame(loop);
 })();
 
-/* ==================================================================== */
-/* MODULE 03 — MINIMAX TIC-TAC-TOE                                      */
-/* ==================================================================== */
+/* ===================== 03 — MINIMAX (play + difficulty) ===================== */
 (function(){
-  const WINS=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const boardEl=document.getElementById("ttt-board");
-  const verdict=document.getElementById("ttt-verdict");
-  const nodesEl=document.getElementById("ttt-nodes");
-  let b,human,ai,turn,done,aiFirst=false;
-  const cells=[];
-  for(let i=0;i<9;i++){ const btn=document.createElement("button");
-    btn.setAttribute("aria-label","cell "+(i+1)); btn.dataset.i=i;
-    btn.onclick=()=>play(i); boardEl.appendChild(btn); cells.push(btn); }
-
-  function winner(bd){ for(const[a,c,d] of WINS){ if(bd[a]&&bd[a]===bd[c]&&bd[a]===bd[d]) return bd[a]; } return null; }
-  function moves(bd){ const m=[]; for(let i=0;i<9;i++) if(!bd[i]) m.push(i); return m; }
-  let nodeCount=0;
-  function minimax(bd,pl,depth,alpha,beta){ nodeCount++;
-    const w=winner(bd); if(w===ai) return [10-depth,null]; if(w===human) return [depth-10,null];
-    if(moves(bd).length===0) return [0,null];
-    let bestM=null;
-    if(pl===ai){ let best=-999; for(const m of moves(bd)){ bd[m]=ai;
-      const s=minimax(bd,human,depth+1,alpha,beta)[0]; bd[m]=""; if(s>best){best=s;bestM=m;}
-      alpha=Math.max(alpha,best); if(beta<=alpha) break; } return [best,bestM]; }
-    else { let best=999; for(const m of moves(bd)){ bd[m]=human;
-      const s=minimax(bd,ai,depth+1,alpha,beta)[0]; bd[m]=""; if(s<best){best=s;bestM=m;}
-      beta=Math.min(beta,best); if(beta<=alpha) break; } return [best,bestM]; }
-  }
-  function render(){ for(let i=0;i<9;i++){ const v=b[i];
-    cells[i].innerHTML= v? "<span class='"+(v==="X"?"x":"o")+"'>"+v+"</span>" : "";
-    cells[i].disabled = !!v || done || turn!==human; } }
-  function finish(){ const w=winner(b); done=true;
-    if(w===human){ verdict.textContent="You won?! (that shouldn't happen)"; verdict.className="verdict mono win"; }
-    else if(w===ai){ verdict.textContent="AI wins. Told you."; verdict.className="verdict mono lose"; }
-    else { verdict.textContent="Draw — the best anyone can do."; verdict.className="verdict mono draw"; }
-    render(); }
-  function aiMove(){ nodeCount=0; const [,m]=minimax(b,ai,0,-999,999);
-    nodesEl.textContent="nodes: "+nodeCount.toLocaleString();
-    if(m!=null) b[m]=ai; turn=human;
-    if(winner(b)||moves(b).length===0){ finish(); return; }
-    verdict.textContent="Your move."; verdict.className="verdict mono"; render(); }
-  function play(i){ if(done||b[i]||turn!==human) return; b[i]=human; turn=ai;
-    if(winner(b)||moves(b).length===0){ finish(); return; }
-    verdict.textContent="AI is thinking…"; render(); setTimeout(aiMove, 260); }
-  function reset(){ b=["","","","","","","","",""]; done=false; human="X"; ai="O";
-    nodesEl.textContent="nodes: —";
-    if(aiFirst){ turn=ai; verdict.textContent="AI opens…"; render(); setTimeout(aiMove,260); }
-    else { turn=human; verdict.textContent="You are X. Your move."; verdict.className="verdict mono"; render(); } }
+  const WIN=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const boardEl=document.getElementById("ttt-board"),verdict=document.getElementById("ttt-verdict"),nodesEl=document.getElementById("ttt-nodes");
+  let b,turn,done,aiFirst=false,level=0; const LV=["Perfect","Good","Casual"],MIS=[0,0.2,0.5];
+  const human="X",ai="O",cells=[];
+  for(let i=0;i<9;i++){const btn=document.createElement("button");btn.setAttribute("aria-label","cell "+(i+1));btn.onclick=()=>play(i);boardEl.appendChild(btn);cells.push(btn);}
+  const winner=bd=>{for(const[a,c,d]of WIN)if(bd[a]&&bd[a]===bd[c]&&bd[a]===bd[d])return bd[a];return null;};
+  const moves=bd=>{const m=[];for(let i=0;i<9;i++)if(!bd[i])m.push(i);return m;};
+  let nc=0;
+  function mm(bd,pl,dep,al,be){nc++;const w=winner(bd);if(w===ai)return[10-dep,null];if(w===human)return[dep-10,null];if(!moves(bd).length)return[0,null];let bm=null;
+    if(pl===ai){let bs=-999;for(const m of moves(bd)){bd[m]=ai;const s=mm(bd,human,dep+1,al,be)[0];bd[m]="";if(s>bs){bs=s;bm=m;}al=Math.max(al,bs);if(be<=al)break;}return[bs,bm];}
+    else{let bs=999;for(const m of moves(bd)){bd[m]=human;const s=mm(bd,ai,dep+1,al,be)[0];bd[m]="";if(s<bs){bs=s;bm=m;}be=Math.min(be,bs);if(be<=al)break;}return[bs,bm];}}
+  function render(){for(let i=0;i<9;i++){const v=b[i];cells[i].innerHTML=v?"<span class='"+(v==="X"?"x":"o")+"'>"+v+"</span>":"";cells[i].disabled=!!v||done||turn!==human;}}
+  function finish(){const w=winner(b);done=true;if(w===human){verdict.textContent="You win! (Casual slipped up)";verdict.className="verdict mono win";}else if(w===ai){verdict.textContent="AI wins.";verdict.className="verdict mono lose";}else{verdict.textContent="Draw — the best you can force on Perfect.";verdict.className="verdict mono draw";}render();}
+  function aiMove(){nc=0;let m;const legal=moves(b);
+    if(Math.random()<MIS[level]) m=legal[Math.floor(Math.random()*legal.length)]; else m=mm(b,ai,0,-999,999)[1];
+    nodesEl.textContent="nodes: "+nc.toLocaleString(); if(m!=null)b[m]=ai; turn=human;
+    if(winner(b)||!moves(b).length){finish();return;} verdict.textContent="Your move.";verdict.className="verdict mono";render();}
+  function play(i){if(done||b[i]||turn!==human)return;b[i]=human;turn=ai;if(winner(b)||!moves(b).length){finish();return;}verdict.textContent="AI thinking…";render();setTimeout(aiMove,240);}
+  function reset(){b=Array(9).fill("");done=false;nodesEl.textContent="nodes: —";
+    if(aiFirst){turn=ai;verdict.textContent="AI opens…";render();setTimeout(aiMove,240);}else{turn=human;verdict.textContent="You are X. Your move.";verdict.className="verdict mono";render();}}
   document.getElementById("ttt-new").onclick=reset;
-  document.getElementById("ttt-first").onclick=e=>{ aiFirst=!aiFirst;
-    e.target.setAttribute("aria-pressed",aiFirst); e.target.textContent= aiFirst?"You move first":"AI moves first"; reset(); };
+  document.getElementById("ttt-level").onclick=e=>{level=(level+1)%3;e.target.textContent="AI: "+LV[level];reset();};
+  document.getElementById("ttt-first").onclick=e=>{aiFirst=!aiFirst;e.target.setAttribute("aria-pressed",aiFirst);e.target.textContent=aiFirst?"You move first":"AI moves first";reset();};
   reset();
 })();
 
-/* ==================================================================== */
-/* MODULE 04 — BOIDS FLOCKING                                           */
-/* ==================================================================== */
+/* ===================== 04 — BOIDS (cursor leads) ===================== */
 (function(){
   const cv=document.getElementById("boid-canvas"),ctx=cv.getContext("2d");
-  const N=60; let boids=[],running=!REDUCED,seek=true,target,tt=0;
-  function reset(){ boids=[]; for(let i=0;i<N;i++) boids.push({
-    x:Math.random()*cv.width,y:Math.random()*cv.height,
-    vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2}); }
-  function tick(){
-    tt+=0.02; target={x:cv.width/2+Math.cos(tt)*cv.width*0.32,y:cv.height/2+Math.sin(tt*1.3)*cv.height*0.32};
-    for(const b of boids){
-      let sx=0,sy=0,ax=0,ay=0,cx=0,cy=0,n=0;
-      for(const o of boids){ if(o===b) continue;
-        const dx=b.x-o.x,dy=b.y-o.y,d=dx*dx+dy*dy;
-        if(d<3600&&d>0){ n++; ax+=o.vx; ay+=o.vy; cx+=o.x; cy+=o.y;
-          if(d<600){ sx+=dx/d*20; sy+=dy/d*20; } } }
-      if(n){ ax/=n;ay/=n;cx/=n;cy/=n;
-        b.vx+=(ax-b.vx)*0.05+(cx-b.x)*0.0008+sx*0.02;
-        b.vy+=(ay-b.vy)*0.05+(cy-b.y)*0.0008+sy*0.02; }
-      if(seek){ b.vx+=(target.x-b.x)*0.0012; b.vy+=(target.y-b.y)*0.0012; }
-      const sp=Math.hypot(b.vx,b.vy),max=2.6; if(sp>max){b.vx=b.vx/sp*max;b.vy=b.vy/sp*max;}
-      b.x+=b.vx; b.y+=b.vy;
-      if(b.x<0)b.x+=cv.width; if(b.x>cv.width)b.x-=cv.width;
-      if(b.y<0)b.y+=cv.height; if(b.y>cv.height)b.y-=cv.height;
-    }
+  const N=60; let boids=[],running=!REDUCED,seek=true,target={x:cv.width/2,y:cv.height/2},pointer=false,tt=0;
+  function reset(){boids=[];for(let i=0;i<N;i++)boids.push({x:Math.random()*cv.width,y:Math.random()*cv.height,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2});}
+  function tick(){ if(!pointer){tt+=0.02;target={x:cv.width/2+Math.cos(tt)*cv.width*.32,y:cv.height/2+Math.sin(tt*1.3)*cv.height*.32};}
+    for(const b of boids){let ax=0,ay=0,cx=0,cy=0,sx=0,sy=0,n=0;
+      for(const o of boids){if(o===b)continue;const dx=b.x-o.x,dy=b.y-o.y,d=dx*dx+dy*dy;if(d<3600&&d>0){n++;ax+=o.vx;ay+=o.vy;cx+=o.x;cy+=o.y;if(d<600){sx+=dx/d*20;sy+=dy/d*20;}}}
+      if(n){ax/=n;ay/=n;cx/=n;cy/=n;b.vx+=(ax-b.vx)*.05+(cx-b.x)*.0008+sx*.02;b.vy+=(ay-b.vy)*.05+(cy-b.y)*.0008+sy*.02;}
+      if(seek){b.vx+=(target.x-b.x)*.0014;b.vy+=(target.y-b.y)*.0014;}
+      const sp=Math.hypot(b.vx,b.vy),mx=2.7;if(sp>mx){b.vx=b.vx/sp*mx;b.vy=b.vy/sp*mx;}
+      b.x+=b.vx;b.y+=b.vy;if(b.x<0)b.x+=cv.width;if(b.x>cv.width)b.x-=cv.width;if(b.y<0)b.y+=cv.height;if(b.y>cv.height)b.y-=cv.height;}
   }
-  function draw(){
-    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
-    if(seek&&target){ ctx.strokeStyle="rgba(245,166,35,.6)"; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.arc(target.x,target.y,7,0,7); ctx.stroke(); }
-    for(const b of boids){ const a=Math.atan2(b.vy,b.vx);
-      ctx.fillStyle="#38bdf8"; ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(a);
-      ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(-4,3); ctx.lineTo(-4,-3); ctx.closePath(); ctx.fill();
-      ctx.restore(); }
-  }
-  let acc=0,last=0;
-  function loop(ts){ const dt=ts-last;last=ts; if(running){acc+=dt; if(acc>16){acc=0;tick();}} draw(); requestAnimationFrame(loop); }
+  function draw(){ctx.fillStyle="#080d13";ctx.fillRect(0,0,cv.width,cv.height);
+    if(seek){ctx.strokeStyle="rgba(245,166,35,.6)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(target.x,target.y,7,0,7);ctx.stroke();}
+    for(const b of boids){const a=Math.atan2(b.vy,b.vx);ctx.fillStyle="#38bdf8";ctx.save();ctx.translate(b.x,b.y);ctx.rotate(a);ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(-4,3);ctx.lineTo(-4,-3);ctx.closePath();ctx.fill();ctx.restore();}}
+  cv.addEventListener("pointermove",e=>{pointer=true;target=cpos(cv,e);});
+  cv.addEventListener("pointerleave",()=>pointer=false);
+  let acc=0,last=0;function loop(ts){const dt=ts-last;last=ts;if(running){acc+=dt;if(acc>16){acc=0;tick();}}draw();requestAnimationFrame(loop);}
   document.getElementById("boid-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
-  document.getElementById("boid-seek").onclick=e=>{seek=!seek;e.target.setAttribute("aria-pressed",seek);
-    e.target.textContent="Hunt target: "+(seek?"on":"off");
-    document.getElementById("boid-hud").textContent=seek?"Flock hunting the target as one pack":"Free flocking — order from local rules";};
-  document.getElementById("boid-scatter").onclick=()=>{ for(const b of boids){b.vx=(Math.random()-.5)*8;b.vy=(Math.random()-.5)*8;} };
-  reset(); if(REDUCED){document.getElementById("boid-play").textContent="Play";draw();} requestAnimationFrame(loop);
+  document.getElementById("boid-seek").onclick=e=>{seek=!seek;e.target.setAttribute("aria-pressed",seek);e.target.textContent="Hunt cursor: "+(seek?"on":"off");document.getElementById("boid-hud").textContent=seek?"Move your cursor to lead the flock.":"Free flocking — order from local rules.";};
+  document.getElementById("boid-scatter").onclick=()=>{for(const b of boids){b.vx=(Math.random()-.5)*8;b.vy=(Math.random()-.5)*8;}};
+  reset();if(REDUCED){document.getElementById("boid-play").textContent="Play";draw();}requestAnimationFrame(loop);
 })();
 
-/* ==================================================================== */
-/* MODULE 05 — A* PATHFINDING                                           */
-/* ==================================================================== */
+/* ===================== 05 — A* (set goal / draw walls) ===================== */
 (function(){
-  const M=[
+  const base=[
     "###############","#.....#.......#","#.###.#.#####.#","#.#...#.#...#.#",
     "#.#.###.#.#.#.#","#.#.....#.#...#","#.#######.###.#","#.........#...#",
     "#.#######.#.#.#","#.......#...#.#","#######.#####.#","#.......#.....#",
     "###############"];
-  const W=M[0].length,H=M.length,TS=30;
-  const cv=document.getElementById("astar-canvas"),ctx=cv.getContext("2d"); cv.width=W*TS;cv.height=H*TS;
-  const wall=(x,y)=>x<0||y<0||x>=W||y>=H||M[y][x]==="#";
-  const key=(x,y)=>x+","+y;
-  function astar(s,g){ // returns {path, closed}
-    const open=[[man(s,g),0,s]], came={}, gsc={[key(...s)]:0}, closed=new Set();
-    while(open.length){ open.sort((a,b)=>a[0]-b[0]); const [,gc,c]=open.shift();
-      const ck=key(...c); if(closed.has(ck)) continue; closed.add(ck);
-      if(c[0]===g[0]&&c[1]===g[1]){ const path=[]; let k=ck;
-        while(k!==undefined){ const [px,py]=k.split(",").map(Number); path.push([px,py]); k=came[k]; }
-        return {path:path.reverse(),closed}; }
-      for(const[dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=c[0]+dx,ny=c[1]+dy;
-        if(wall(nx,ny)) continue; const nk=key(nx,ny); const ng=gc+1;
-        if(ng<(gsc[nk]??1e9)){ gsc[nk]=ng; came[nk]=ck; open.push([ng+man([nx,ny],g),ng,[nx,ny]]); } } }
-    return {path:[],closed}; }
-  function man(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]);}
-  let chaser=[1,1],target=[W-2,H-2],tphase=0,running=!REDUCED,showSearch=true,last={path:[],closed:new Set()};
-  const spots=[[W-2,H-2],[1,H-2],[W-2,1],[7,5],[1,1]];
-  function tick(){
-    tphase=(tphase+1)%16; if(tphase===0){ target=spots[Math.floor(Math.random()*spots.length)]; }
-    last=astar(chaser,target);
-    if(last.path.length>1){ chaser=last.path[1]; }
-    document.getElementById("astar-nodes").textContent="expanded: "+last.closed.size;
-    document.getElementById("astar-hud").innerHTML="Chasing target · path length <span class='k'>"+last.path.length+"</span>";
-  }
-  function draw(){
-    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(M[y][x]==="#"){ctx.fillStyle="#243244";ctx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2);}
-    if(showSearch){ ctx.fillStyle="rgba(56,189,248,.13)"; for(const ck of last.closed){ const [x,y]=ck.split(",").map(Number); ctx.fillRect(x*TS+4,y*TS+4,TS-8,TS-8);} }
-    ctx.strokeStyle="#38bdf8"; ctx.lineWidth=3; ctx.beginPath();
-    last.path.forEach((p,i)=>{ const X=p[0]*TS+TS/2,Y=p[1]*TS+TS/2; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }); ctx.stroke();
-    ctx.fillStyle="#f5a623"; ctx.beginPath(); ctx.arc(target[0]*TS+TS/2,target[1]*TS+TS/2,TS*0.3,0,7); ctx.fill();
-    ctx.fillStyle="#a78bfa"; ctx.beginPath(); ctx.arc(chaser[0]*TS+TS/2,chaser[1]*TS+TS/2,TS*0.32,0,7); ctx.fill();
-  }
-  let acc=0,lt=0;
-  function loop(ts){const dt=ts-lt;lt=ts; if(running){acc+=dt; if(acc>260){acc=0;tick();}} draw(); requestAnimationFrame(loop);}
+  const W=base[0].length,H=base.length,TS=30;
+  const cv=document.getElementById("astar-canvas"),ctx=cv.getContext("2d");cv.width=W*TS;cv.height=H*TS;
+  let walls=new Set(); base.forEach((r,y)=>{[...r].forEach((c,x)=>{if(c==="#")walls.add(x+","+y);});});
+  const wall=(x,y)=>x<0||y<0||x>=W||y>=H||walls.has(x+","+y);
+  const K=(x,y)=>x+","+y,man=(a,b)=>Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]);
+  function astar(s,g){const open=[[man(s,g),0,s]],came={},gs={[K(...s)]:0},closed=new Set();
+    while(open.length){open.sort((a,b)=>a[0]-b[0]);const[,gc,c]=open.shift();const ck=K(...c);if(closed.has(ck))continue;closed.add(ck);
+      if(c[0]===g[0]&&c[1]===g[1]){const p=[];let k=ck;while(k!==undefined){const[x,y]=k.split(",").map(Number);p.push([x,y]);k=came[k];}return{path:p.reverse(),closed};}
+      for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const nx=c[0]+dx,ny=c[1]+dy;if(wall(nx,ny))continue;const nk=K(nx,ny),ng=gc+1;if(ng<(gs[nk]??1e9)){gs[nk]=ng;came[nk]=ck;open.push([ng+man([nx,ny],g),ng,[nx,ny]]);}}}
+    return{path:[],closed};}
+  let chaser=[1,1],goal=[W-2,H-2],running=!REDUCED,showS=true,mode="goal",last={path:[],closed:new Set()},drag=false;
+  function replan(){last=astar(chaser,goal);document.getElementById("astar-nodes").textContent="expanded: "+last.closed.size;}
+  function tick(){ if(chaser[0]===goal[0]&&chaser[1]===goal[1]){document.getElementById("astar-hud").innerHTML="Reached the goal — click to set a new one.";return;}
+    replan(); if(last.path.length>1)chaser=last.path[1];
+    document.getElementById("astar-hud").innerHTML="Path length <span class='k'>"+last.path.length+"</span> · click to move goal";}
+  function draw(){ctx.fillStyle="#080d13";ctx.fillRect(0,0,cv.width,cv.height);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(wall(x,y)){ctx.fillStyle="#243244";ctx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2);}
+    if(showS){ctx.fillStyle="rgba(56,189,248,.12)";for(const ck of last.closed){const[x,y]=ck.split(",").map(Number);ctx.fillRect(x*TS+4,y*TS+4,TS-8,TS-8);}}
+    ctx.strokeStyle="#38bdf8";ctx.lineWidth=3;ctx.beginPath();last.path.forEach((p,i)=>{const X=p[0]*TS+TS/2,Y=p[1]*TS+TS/2;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);});ctx.stroke();
+    ctx.fillStyle="#f5a623";ctx.beginPath();ctx.arc(goal[0]*TS+TS/2,goal[1]*TS+TS/2,TS*.3,0,7);ctx.fill();
+    ctx.fillStyle="#a78bfa";ctx.beginPath();ctx.arc(chaser[0]*TS+TS/2,chaser[1]*TS+TS/2,TS*.32,0,7);ctx.fill();}
+  function at(e){const{x,y}=cpos(cv,e);return[Math.floor(x/TS),Math.floor(y/TS)];}
+  function apply(gx,gy){ if(gx<0||gy<0||gx>=W||gy>=H)return;
+    if(mode==="goal"){ if(!wall(gx,gy)){goal=[gx,gy];replan();} }
+    else{ const k=K(gx,gy); if((gx===chaser[0]&&gy===chaser[1])||(gx===goal[0]&&gy===goal[1]))return;
+      if(walls.has(k))walls.delete(k);else walls.add(k); replan(); } }
+  cv.addEventListener("pointerdown",e=>{drag=true;const[x,y]=at(e);apply(x,y);});
+  cv.addEventListener("pointermove",e=>{if(drag&&mode==="walls"){const[x,y]=at(e);apply(x,y);}});
+  window.addEventListener("pointerup",()=>drag=false);
+  let acc=0,last2=0;function loop(ts){const dt=ts-last2;last2=ts;if(running){acc+=dt;if(acc>240){acc=0;tick();}}draw();requestAnimationFrame(loop);}
   document.getElementById("astar-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
-  document.getElementById("astar-step").onclick=()=>{tick();draw();};
-  document.getElementById("astar-search").onclick=e=>{showSearch=!showSearch;e.target.setAttribute("aria-pressed",showSearch);e.target.textContent="Show search: "+(showSearch?"on":"off");};
-  tick(); if(REDUCED){document.getElementById("astar-play").textContent="Play";} draw(); requestAnimationFrame(loop);
+  document.getElementById("astar-mode").onclick=e=>{mode=mode==="goal"?"walls":"goal";e.target.textContent="Mode: "+(mode==="goal"?"Goal":"Walls");};
+  document.getElementById("astar-clear").onclick=()=>{walls=new Set();base.forEach((r,y)=>{if(y===0||y===H-1)[...r].forEach((c,x)=>walls.add(x+","+y));});for(let y=0;y<H;y++){walls.add(K(0,y));walls.add(K(W-1,y));}replan();};
+  document.getElementById("astar-search").onclick=e=>{showS=!showS;e.target.setAttribute("aria-pressed",showS);e.target.textContent="Show search: "+(showS?"on":"off");};
+  replan();if(REDUCED){document.getElementById("astar-play").textContent="Play";}draw();requestAnimationFrame(loop);
 })();
 
-/* ==================================================================== */
-/* MODULE 06 — Q-LEARNING GRID WORLD                                    */
-/* ==================================================================== */
+/* ===================== 06 — Q-LEARNING (set the goal) ===================== */
 (function(){
   const GW=7,GH=5,TS=60;
-  const cv=document.getElementById("q-canvas"),ctx=cv.getContext("2d"); cv.width=GW*TS;cv.height=GH*TS;
-  const GOAL=[6,0],PIT=[6,2],WALLS=new Set(["3,1","3,2","3,3"]);
-  const ACTS=[[0,-1],[0,1],[-1,0],[1,0]]; // up down left right
-  const key=(x,y)=>x+","+y;
-  const blocked=(x,y)=>x<0||y<0||x>=GW||y>=GH||WALLS.has(key(x,y));
-  let Q,ep,running=!REDUCED;
-  function reset(){ Q={}; ep=0; }
-  function q(s){ return Q[s]||(Q[s]=[0,0,0,0]); }
-  function episode(){
-    let x=0,y=GH-1; const eps=Math.max(0.05,1-ep/400);
-    for(let t=0;t<60;t++){ const s=key(x,y); const qs=q(s);
-      const a = Math.random()<eps ? Math.floor(Math.random()*4) : qs.indexOf(Math.max(...qs));
-      let nx=x+ACTS[a][0],ny=y+ACTS[a][1]; if(blocked(nx,ny)){nx=x;ny=y;}
-      let r=-1,done=false;
-      if(nx===GOAL[0]&&ny===GOAL[1]){r=100;done=true;} else if(nx===PIT[0]&&ny===PIT[1]){r=-100;done=true;}
-      const ns=key(nx,ny); const target=r+(done?0:0.9*Math.max(...q(ns)));
-      qs[a]+=0.3*(target-qs[a]); x=nx;y=ny; if(done)break; }
-    ep++;
-  }
-  function draw(){
-    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
-    let maxv=1; for(const k in Q){ maxv=Math.max(maxv,Math.max(...Q[k])); }
-    for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){ const s=key(x,y);
-      if(WALLS.has(s)){ ctx.fillStyle="#243244"; ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4); continue; }
-      if(x===GOAL[0]&&y===GOAL[1]){ ctx.fillStyle="#12694a"; }
-      else if(x===PIT[0]&&y===PIT[1]){ ctx.fillStyle="#7a2036"; }
-      else { const v=Math.max(0,Math.max(...(Q[s]||[0]))); const t=v/maxv;
-        ctx.fillStyle="rgba(56,189,248,"+(0.06+0.5*t).toFixed(3)+")"; }
+  const cv=document.getElementById("q-canvas"),ctx=cv.getContext("2d");cv.width=GW*TS;cv.height=GH*TS;
+  let GOAL=[6,0],PIT=[6,2];const WALLS=new Set(["3,1","3,2","3,3"]);
+  const ACTS=[[0,-1],[0,1],[-1,0],[1,0]],K=(x,y)=>x+","+y;
+  const blocked=(x,y)=>x<0||y<0||x>=GW||y>=GH||WALLS.has(K(x,y));
+  let Q,ep,running=!REDUCED,mode="goal";
+  function reset(){Q={};ep=0;}
+  const q=s=>Q[s]||(Q[s]=[0,0,0,0]);
+  function episode(){let x=0,y=GH-1;const eps=Math.max(.05,1-ep/400);
+    for(let t=0;t<60;t++){const s=K(x,y),qs=q(s);const a=Math.random()<eps?Math.floor(Math.random()*4):qs.indexOf(Math.max(...qs));
+      let nx=x+ACTS[a][0],ny=y+ACTS[a][1];if(blocked(nx,ny)){nx=x;ny=y;}let r=-1,done=false;
+      if(nx===GOAL[0]&&ny===GOAL[1]){r=100;done=true;}else if(nx===PIT[0]&&ny===PIT[1]){r=-100;done=true;}
+      const tg=r+(done?0:.9*Math.max(...q(K(nx,ny))));qs[a]+=.3*(tg-qs[a]);x=nx;y=ny;if(done)break;}ep++;}
+  function draw(){ctx.fillStyle="#080d13";ctx.fillRect(0,0,cv.width,cv.height);let mv=1;for(const k in Q)mv=Math.max(mv,Math.max(...Q[k]));
+    for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const s=K(x,y);
+      if(WALLS.has(s)){ctx.fillStyle="#243244";}else if(x===GOAL[0]&&y===GOAL[1]){ctx.fillStyle="#12694a";}else if(x===PIT[0]&&y===PIT[1]){ctx.fillStyle="#7a2036";}
+      else{const v=Math.max(0,Math.max(...(Q[s]||[0])));ctx.fillStyle="rgba(56,189,248,"+(.06+.5*v/mv).toFixed(3)+")";}
       ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4);
-      // policy arrow
-      if(Q[s]&&!(x===GOAL[0]&&y===GOAL[1])&&!(x===PIT[0]&&y===PIT[1])){
-        const a=Q[s].indexOf(Math.max(...Q[s])); const cx=x*TS+TS/2,cy=y*TS+TS/2;
-        const dx=ACTS[a][0],dy=ACTS[a][1]; ctx.strokeStyle="#dbe7f2"; ctx.lineWidth=2;
-        ctx.beginPath(); ctx.moveTo(cx-dx*10,cy-dy*10); ctx.lineTo(cx+dx*10,cy+dy*10); ctx.stroke();
-        ctx.beginPath(); ctx.arc(cx+dx*10,cy+dy*10,2.5,0,7); ctx.fillStyle="#dbe7f2"; ctx.fill(); }
-    }
-    ctx.fillStyle="#e6edf3"; ctx.font="600 15px ui-monospace,monospace";
-    ctx.fillText("G",GOAL[0]*TS+TS/2-5,GOAL[1]*TS+TS/2+5);
-    ctx.fillText("✕",PIT[0]*TS+TS/2-6,PIT[1]*TS+TS/2+5);
-  }
-  let acc=0,lt=0;
-  function loop(ts){const dt=ts-lt;lt=ts; if(running){acc+=dt; if(acc>40){acc=0; for(let i=0;i<3;i++) episode();
-    document.getElementById("q-ep").textContent="episode "+ep;
-    document.getElementById("q-hud").innerHTML= ep<80?"Exploring — mostly noise so far":"Policy converged — arrows trace the route to <span class='k'>G</span>";}} draw(); requestAnimationFrame(loop);}
+      if(Q[s]&&!(x===GOAL[0]&&y===GOAL[1])&&!(x===PIT[0]&&y===PIT[1])&&!WALLS.has(s)){const a=Q[s].indexOf(Math.max(...Q[s])),cx=x*TS+TS/2,cy=y*TS+TS/2,dx=ACTS[a][0],dy=ACTS[a][1];
+        ctx.strokeStyle="#dbe7f2";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx-dx*10,cy-dy*10);ctx.lineTo(cx+dx*10,cy+dy*10);ctx.stroke();ctx.beginPath();ctx.arc(cx+dx*10,cy+dy*10,2.5,0,7);ctx.fillStyle="#dbe7f2";ctx.fill();}}
+    ctx.fillStyle="#e6edf3";ctx.font="600 15px ui-monospace,monospace";ctx.fillText("G",GOAL[0]*TS+TS/2-5,GOAL[1]*TS+TS/2+5);ctx.fillText("✕",PIT[0]*TS+TS/2-6,PIT[1]*TS+TS/2+5);}
+  cv.addEventListener("pointerdown",e=>{const{x,y}=cpos(cv,e);const gx=Math.floor(x/TS),gy=Math.floor(y/TS);if(blocked(gx,gy))return;
+    if(mode==="goal"){if(gx===PIT[0]&&gy===PIT[1])return;GOAL=[gx,gy];}else{if(gx===GOAL[0]&&gy===GOAL[1])return;PIT=[gx,gy];} if(gx===0&&gy===GH-1)return; reset();});
+  let acc=0,last=0;function loop(ts){const dt=ts-last;last=ts;if(running){acc+=dt;if(acc>40){acc=0;for(let i=0;i<3;i++)episode();document.getElementById("q-ep").textContent="episode "+ep;document.getElementById("q-hud").innerHTML=ep<80?"Exploring — mostly noise so far":"Policy converged — arrows trace the route to <span class='k'>G</span>";}}draw();requestAnimationFrame(loop);}
   document.getElementById("q-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
-  document.getElementById("q-reset").onclick=()=>{reset();draw();document.getElementById("q-ep").textContent="episode 0";};
-  reset(); if(REDUCED){document.getElementById("q-play").textContent="Play";} draw(); requestAnimationFrame(loop);
+  document.getElementById("q-mode").onclick=e=>{mode=mode==="goal"?"pit":"goal";e.target.textContent="Place: "+(mode==="goal"?"Goal":"Pit");};
+  document.getElementById("q-reset").onclick=()=>{reset();document.getElementById("q-ep").textContent="episode 0";};
+  reset();if(REDUCED){document.getElementById("q-play").textContent="Play";}draw();requestAnimationFrame(loop);
 })();
 
-/* ==================================================================== */
-/* MODULE 07 — OPEN-WORLD STREAMING & LOD AI                            */
-/* ==================================================================== */
+/* ===================== 07 — OPEN WORLD (drive) ===================== */
 (function(){
   const cv=document.getElementById("ow-canvas"),ctx=cv.getContext("2d");
-  const CX=cv.width/2,CY=cv.height/2, CULL=200, CAP=90;
-  let npcs=[],running=!REDUCED,llm=false,fullR=110,pa=0,budget=0;
-  function spawn(){ const ang=Math.random()*7, d=fullR*0.4+Math.random()*(CULL-fullR*0.4);
-    // spawn relative to player (player is centre); store world offset that drifts
-    npcs.push({ox:Math.cos(ang)*d,oy:Math.sin(ang)*d,vx:(Math.random()-.5)*0.4,vy:(Math.random()-.5)*0.4,
-      hero:llm&&Math.random()<0.12}); }
-  function tick(){
-    pa+=0.015; // player drifts through the world -> everything streams past
-    const pdx=Math.cos(pa)*1.4, pdy=Math.sin(pa*1.2)*1.4;
-    for(const n of npcs){ n.ox+=n.vx-pdx; n.oy+=n.vy-pdy; }
-    npcs=npcs.filter(n=>Math.hypot(n.ox,n.oy)<CULL);        // despawn out of range
-    while(npcs.length<CAP) spawn();                          // top up to the cap
-    // budget: full-sim NPCs cost 1, hero LLM NPCs cost 8
-    let full=0,simp=0,hero=0;
-    for(const n of npcs){ const d=Math.hypot(n.ox,n.oy);
-      if(d<fullR){ full++; if(n.hero) hero++; } else simp++; }
-    budget = Math.min(140, full*1.0 + hero*8 + simp*0.15);
+  const CX=cv.width/2,CY=cv.height/2,CULL=200,CAP=90;
+  let npcs=[],running=!REDUCED,llm=false,fullR=110,budget=0;
+  const keys={},dpad={},dragv={x:0,y:0,on:false};
+  function spawn(near){const ang=Math.random()*7,d=near?(fullR*.4+Math.random()*(CULL-fullR*.4)):(Math.random()*CULL);
+    npcs.push({ox:Math.cos(ang)*d,oy:Math.sin(ang)*d,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,hero:llm&&Math.random()<.12});}
+  function vel(){let vx=0,vy=0;
+    if(keys.ArrowUp||keys.w||keys.W||dpad.up)vy-=1; if(keys.ArrowDown||keys.s||keys.S||dpad.down)vy+=1;
+    if(keys.ArrowLeft||keys.a||keys.A||dpad.left)vx-=1; if(keys.ArrowRight||keys.d||keys.D||dpad.right)vx+=1;
+    if(dragv.on){vx+=dragv.x;vy+=dragv.y;}
+    const m=Math.hypot(vx,vy);if(m>1){vx/=m;vy/=m;}return{vx:vx*1.7,vy:vy*1.7};}
+  function tick(){const{vx,vy}=vel();
+    for(const n of npcs){n.ox+=n.vx-vx;n.oy+=n.vy-vy;}
+    npcs=npcs.filter(n=>Math.hypot(n.ox,n.oy)<CULL);while(npcs.length<CAP)spawn(true);
+    let full=0,simp=0,hero=0;for(const n of npcs){const d=Math.hypot(n.ox,n.oy);if(d<fullR){full++;if(n.hero)hero++;}else simp++;}
+    budget=Math.min(150,full*1+hero*8+simp*.15);const over=budget>100;
     document.getElementById("ow-pop").textContent="pop "+npcs.length;
-    const over=budget>100;
-    document.getElementById("ow-hud").innerHTML="full-sim <span class='k'>"+full+"</span> · simplified <span class='k'>"+simp+"</span>"+(llm?" · LLM heroes <span class='k'>"+hero+"</span>":"")+" · budget <span class='k' style='color:"+(over?'#fb6f8e':'#34d399')+"'>"+budget.toFixed(0)+"%</span>"+(over?" — DEGRADING":"");
-    return over;
-  }
-  function draw(over){
-    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
-    // rings
-    ctx.strokeStyle="rgba(56,189,248,.25)"; ctx.setLineDash([4,4]);
-    ctx.beginPath(); ctx.arc(CX,CY,fullR,0,7); ctx.stroke();
-    ctx.strokeStyle="rgba(124,138,160,.2)"; ctx.beginPath(); ctx.arc(CX,CY,CULL,0,7); ctx.stroke(); ctx.setLineDash([]);
-    for(const n of npcs){ const d=Math.hypot(n.ox,n.oy); const X=CX+n.ox,Y=CY+n.oy;
-      let col; if(d<fullR){ col = n.hero? "#a78bfa" : (over && Math.random()<0.0? "#7c8aa0":"#38bdf8"); }
-      else col="#7c8aa0";
-      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X,Y, n.hero?3.4:2.4,0,7); ctx.fill();
-    }
-    // player
-    ctx.fillStyle="#f5a623"; ctx.beginPath(); ctx.arc(CX,CY,5,0,7); ctx.fill();
-    ctx.strokeStyle="rgba(245,166,35,.5)"; ctx.beginPath(); ctx.arc(CX,CY,8,0,7); ctx.stroke();
-    // budget bar
-    const bw=cv.width-20; ctx.fillStyle="rgba(255,255,255,.08)"; ctx.fillRect(10,cv.height-12,bw,5);
-    ctx.fillStyle= budget>100?"#fb6f8e":"#34d399"; ctx.fillRect(10,cv.height-12,bw*Math.min(1,budget/100),5);
-    ctx.fillStyle="rgba(255,255,255,.25)"; ctx.fillRect(10+bw,cv.height-14,1,9);
-  }
-  let acc=0,lt=0,over=false;
-  function loop(ts){const dt=ts-lt;lt=ts; if(running){acc+=dt; if(acc>60){acc=0; over=tick();}} draw(over); requestAnimationFrame(loop);}
+    document.getElementById("ow-hud").innerHTML="full-sim <span class='k'>"+full+"</span> · simplified <span class='k'>"+simp+"</span>"+(llm?" · heroes <span class='k'>"+hero+"</span>":"")+" · budget <span class='k' style='color:"+(over?"#fb6f8e":"#34d399")+"'>"+budget.toFixed(0)+"%</span>"+(over?" — DEGRADING":(vx||vy?"":" · idle"));
+    return over;}
+  function draw(over){ctx.fillStyle="#080d13";ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle="rgba(56,189,248,.25)";ctx.setLineDash([4,4]);ctx.beginPath();ctx.arc(CX,CY,fullR,0,7);ctx.stroke();
+    ctx.strokeStyle="rgba(124,138,160,.2)";ctx.beginPath();ctx.arc(CX,CY,CULL,0,7);ctx.stroke();ctx.setLineDash([]);
+    for(const n of npcs){const d=Math.hypot(n.ox,n.oy),X=CX+n.ox,Y=CY+n.oy;let col=d<fullR?(n.hero?"#a78bfa":"#38bdf8"):"#7c8aa0";
+      if(over&&d<fullR&&!n.hero&&(n.ox+n.oy)%3<1)col="#7c8aa0"; ctx.fillStyle=col;ctx.beginPath();ctx.arc(X,Y,n.hero?3.4:2.4,0,7);ctx.fill();}
+    ctx.fillStyle="#f5a623";ctx.beginPath();ctx.arc(CX,CY,5,0,7);ctx.fill();ctx.strokeStyle="rgba(245,166,35,.5)";ctx.beginPath();ctx.arc(CX,CY,8,0,7);ctx.stroke();
+    const bw=cv.width-20;ctx.fillStyle="rgba(255,255,255,.08)";ctx.fillRect(10,cv.height-12,bw,5);ctx.fillStyle=budget>100?"#fb6f8e":"#34d399";ctx.fillRect(10,cv.height-12,bw*Math.min(1,budget/100),5);ctx.fillStyle="rgba(255,255,255,.3)";ctx.fillRect(10+bw,cv.height-14,1,9);}
+  cv.addEventListener("keydown",e=>{if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))e.preventDefault();keys[e.key]=true;});
+  cv.addEventListener("keyup",e=>{keys[e.key]=false;});
+  cv.addEventListener("pointerdown",e=>{cv.focus();dragv.on=true;setDrag(e);});
+  cv.addEventListener("pointermove",e=>{if(dragv.on)setDrag(e);});
+  window.addEventListener("pointerup",()=>dragv.on=false);
+  function setDrag(e){const{x,y}=cpos(cv,e);const dx=x-CX,dy=y-CY,m=Math.hypot(dx,dy)||1;dragv.x=dx/m;dragv.y=dy/m;}
+  holdDir(document.querySelector('.dpad[aria-label="Drive"]'),(d,on)=>{dpad[d]=on;});
+  let acc=0,last=0,over=false;function loop(ts){const dt=ts-last;last=ts;if(running){acc+=dt;if(acc>50){acc=0;over=tick();}}draw(over);requestAnimationFrame(loop);}
   document.getElementById("ow-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
-  document.getElementById("ow-llm").onclick=e=>{llm=!llm;e.target.setAttribute("aria-pressed",llm);
-    e.target.textContent="LLM hero NPCs: "+(llm?"on":"off"); if(!llm) npcs.forEach(n=>n.hero=false);};
+  document.getElementById("ow-llm").onclick=e=>{llm=!llm;e.target.setAttribute("aria-pressed",llm);e.target.textContent="LLM heroes: "+(llm?"on":"off");if(!llm)npcs.forEach(n=>n.hero=false);};
   document.getElementById("ow-radius").oninput=e=>{fullR=+e.target.value;};
-  for(let i=0;i<CAP;i++) spawn(); tick(); if(REDUCED){document.getElementById("ow-play").textContent="Play";} draw(false); requestAnimationFrame(loop);
+  for(let i=0;i<CAP;i++)spawn(false);tick();if(REDUCED){document.getElementById("ow-play").textContent="Play";}draw(false);requestAnimationFrame(loop);
 })();
 </script>
 
