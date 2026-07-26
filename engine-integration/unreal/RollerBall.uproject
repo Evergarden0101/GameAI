@@ -1,0 +1,18 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.4",
+  "Category": "Samples",
+  "Description": "Learning Agents RollerBall — train an RL agent in-engine with human feedback, and run it with NNE.",
+  "Modules": [
+    {
+      "Name": "RollerBall",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    { "Name": "LearningAgents", "Enabled": true },
+    { "Name": "NNE", "Enabled": true },
+    { "Name": "NNERuntimeORT", "Enabled": true }
+  ]
+}

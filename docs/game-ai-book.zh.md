@@ -698,6 +698,10 @@ Unity 的 **ML-Agents 工具包**有两半。在游戏内你写一个 C# `Agent`
 
 Unreal 的 **Learning Agents** 插件走的是另一条路：训练用 C++ **在引擎内部**运行——*没有外部 Python 训练器*。你写一个 **Interactor**（定义观测与动作）、一个 **Trainer**（定义奖励与完成）、以及一个 **Policy**（网络）；每个引擎 tick 推进一步 PPO，通常把游戏加速并让许多智能体并行。推理时你去掉训练器，只跑 Interactor + Policy。另外，Unreal 的 **NNE（神经网络引擎）**在运行时加载并运行任意 **ONNX** 模型（Unity Sentis 的对应物）——因此一个 Python 训练的模型也能在 Unreal 游戏里运行。见 `engine-integration/unreal/`。*（Learning Agents 是实验性的，其 API 在不同引擎版本间会变。）*
 
+### 训练中的人类反馈
+
+除了固定的奖励函数，你还可以把**人放进训练回路**：训练时操作者按键实时奖励或惩罚它，这些信号折入优化器最大化的*同一个*奖励——这是 TAMER / RLHF 的一种简单形式。[`../engine-integration`](../engine-integration) 中两个完整项目都实现了这一点（Unity 的 `HumanFeedback.cs`；Unreal 的 `RollerManager` + `MoveTrainer`），并同时展示了从录制的人类演示中**模仿学习**（行为克隆 + GAIL）。Unity 示例是一个可导入的项目，运行时自建场景；Unreal 示例是一个完整的 C++ 项目脚手架。
+
 ### 一览
 
 | | Unity ML-Agents | Unreal Learning Agents |

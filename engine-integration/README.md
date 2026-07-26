@@ -50,24 +50,36 @@ shipping game.
 | Run a Python-trained ONNX? · 跑 Python 训练的 ONNX | Yes, via Sentis | Yes, via NNE |
 | Maturity · 成熟度 | Stable, widely used | Experimental (API changes) |
 
-- **Unity** → [`unity/`](unity/): `RollerAgent.cs`, `roller_config.yaml`,
-  `SentisInference.cs`, and [its README](unity/README.md).
-- **Unreal** → [`unreal/`](unreal/): `MoveInteractor.h`, `MoveTrainer.h`,
-  `LearningAgentsSetup.cpp`, `NNEInference.cpp`, and [its README](unreal/README.md).
+Both are now **complete projects**, not loose snippets:
 
-## Two situations, both shown · 两种情形，均有示例
+- **Unity** → [`unity/`](unity/) — an **importable Unity project** (open in Unity Hub,
+  press Play; the scene builds itself). RL agent + **live human feedback** + imitation +
+  Sentis inference. See [its README](unity/README.md).
+- **Unreal** → [`unreal/`](unreal/) — a **complete UE 5.4 C++ project scaffold**:
+  Learning Agents in-engine training with **human feedback** + NNE inference. See
+  [its README](unreal/README.md). *(Experimental plugin — needs UE + a compile.)*
+
+## Three situations, all shown · 三种情形，均有示例
 
 1. **Train an AI using a game environment** — the game feeds observations/rewards and
-   the trainer improves the policy (Unity: Python drives it; Unreal: the engine drives
-   it in-process). See `RollerAgent.cs` + `roller_config.yaml`, and `MoveInteractor.h`
-   + `MoveTrainer.h` + `LearningAgentsSetup.cpp`.
+   the trainer improves the policy (Unity: Python over a socket; Unreal: the engine
+   in-process). Unity `Assets/Scripts/RollerAgent.cs` + `config/roller_config.yaml`;
+   Unreal `MoveInteractor` + `MoveTrainer` + `RollerManager`.
    **用游戏环境训练 AI**——游戏提供观测/奖励，训练器改进策略。
 
-2. **Use a trained model during the game (inference in C++/C#)** — freeze the network
-   and run fast forward passes each tick, no training, no Python. See
-   `SentisInference.cs` (Unity) and `NNEInference.cpp` (Unreal); or just assign the
-   `.onnx` to ML-Agents' Behavior Parameters and set *Inference Only*.
-   **游戏中使用训练好的模型（C++/C# 推理）**——冻结网络，每帧做前向推理，无需训练与 Python。
+2. **Human feedback during training (human-in-the-loop)** — while it trains, press
+   **`+` / `-`** to reward/punish the agent live; those presses fold into the same
+   reward PPO optimizes (a TAMER / RLHF-style loop). Unity `HumanFeedback.cs`; Unreal
+   `RollerManager` + `MoveTrainer::GatherAgentReward`. Imitation from recorded demos is
+   also shown (Unity `roller_imitation_config.yaml`, BC + GAIL).
+   **训练中的人类反馈（人在回路）**——训练时按 `+` / `-` 实时奖惩，直接塑造策略；另含从
+   人类演示中模仿学习。
+
+3. **Use a trained model during the game (inference in C++/C#)** — freeze the network
+   and run fast forward passes each tick, no training, no Python. Unity
+   `SentisInference.cs` (or assign the `.onnx` and set *Inference Only*); Unreal
+   `NNEInference.cpp`.
+   **游戏中使用训练好的模型（C++/C# 推理）**——冻结网络，每帧前向推理，无需训练与 Python。
 
 > See **Appendix A** of the [book](../docs/game-ai-book.en.md)
 > ([中文](../docs/game-ai-book.zh.md)) for the narrative version.

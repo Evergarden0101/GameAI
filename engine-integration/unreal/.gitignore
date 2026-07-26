@@ -1,0 +1,13 @@
+# Unreal-generated folders — regenerated when the project is built/opened.
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb

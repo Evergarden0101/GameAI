@@ -720,6 +720,10 @@ To **run it in-game** you have two options, both C#-only with no Python at runti
 
 Unreal's **Learning Agents** plugin takes a different path: training runs **inside the engine** in C++ — there is *no external Python trainer*. You write an **Interactor** (defines observations and actions), a **Trainer** (defines reward and completion), and a **Policy** (the network); each engine tick advances a PPO step, usually with the game sped up and many agents in parallel. At inference time you drop the trainer and run just the Interactor + Policy. Separately, Unreal's **NNE (Neural Network Engine)** loads and runs any **ONNX** model at runtime (the analog of Unity Sentis) — so a model trained in Python can run in an Unreal game too. See `engine-integration/unreal/`. *(Learning Agents is experimental; its API changes between engine versions.)*
 
+### Human feedback during training
+
+Beyond a fixed reward function, you can put a **human in the training loop**: while the agent trains, an operator presses keys to reward or punish it live, and those signals fold into the *same* reward the optimizer maximizes — a simple form of TAMER / RLHF. Both complete projects in [`../engine-integration`](../engine-integration) implement this (`HumanFeedback.cs` in Unity; `RollerManager` + `MoveTrainer` in Unreal), alongside **imitation learning** from recorded human demonstrations (behavioral cloning + GAIL). The Unity example is an importable project that builds its own scene on Play; the Unreal example is a complete C++ project scaffold.
+
 ### At a glance
 
 | | Unity ML-Agents | Unreal Learning Agents |
