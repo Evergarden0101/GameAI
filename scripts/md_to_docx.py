@@ -133,6 +133,37 @@ def add_toc(doc):
 
 
 # --------------------------------------------------------------------------- #
+# CJK: set an East-Asian font on every run + the core styles so Chinese renders
+# with a proper face instead of a substitution.
+# --------------------------------------------------------------------------- #
+def apply_cjk(doc, font="Microsoft YaHei"):
+    def set_ea(rpr):
+        rfonts = rpr.find(qn("w:rFonts"))
+        if rfonts is None:
+            rfonts = OxmlElement("w:rFonts")
+            rpr.insert(0, rfonts)                 # rFonts must be first in rPr
+        rfonts.set(qn("w:eastAsia"), font)
+
+    def all_runs(paras):
+        for p in paras:
+            for r in p.runs:
+                yield r
+
+    for r in all_runs(doc.paragraphs):
+        set_ea(r._r.get_or_add_rPr())
+    for t in doc.tables:
+        for row in t.rows:
+            for cell in row.cells:
+                for r in all_runs(cell.paragraphs):
+                    set_ea(r._r.get_or_add_rPr())
+    for sname in ("Normal", "Heading 1", "Heading 2", "Heading 3", "Heading 4"):
+        try:
+            set_ea(doc.styles[sname].element.get_or_add_rPr())
+        except KeyError:
+            pass
+
+
+# --------------------------------------------------------------------------- #
 # markdown -> docx
 # --------------------------------------------------------------------------- #
 def build(md_path, title, subtitle, byline, out_path):
@@ -318,6 +349,9 @@ def build(md_path, title, subtitle, byline, out_path):
         p = doc.add_paragraph()
         p.paragraph_format.space_after = Pt(6)
         add_inline(p, " ".join(para))
+
+    if ".zh." in md_path or "zh" in out_path.rsplit("/", 1)[-1]:
+        apply_cjk(doc)
 
     doc.save(out_path)
     print("wrote", out_path)

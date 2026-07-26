@@ -43,17 +43,18 @@ Each technique chapter follows the same rhythm: **the idea → how it works → 
 10. Racing AI — Mario Kart to Gran Turismo Sophy
 11. Shooter AI — Doom to Rainbow Six & Apex
 12. Strategy AI — Civilization, Red Alert & StarCraft
+13. Open-World AI — GTA, Streaming & the Performance Budget
 
 **Part IV — Modern, Learned AI**
-13. Reinforcement Learning
-14. Imitation Learning & Other ML
-15. Generative AI Agents (LLMs)
+14. Reinforcement Learning
+15. Imitation Learning & Other ML
+16. Generative AI Agents (LLMs)
 
 **Part V — Practice**
-16. Choosing an Approach
-17. Exercises
-18. Glossary
-19. Further Reading
+17. Choosing an Approach
+18. Exercises
+19. Glossary
+20. Further Reading
 
 ---
 
@@ -347,13 +348,13 @@ On top of distribution sits a small **item-use AI**: hold a shell behind you as 
 
 At the opposite pole is the sim. For decades, *Gran Turismo*'s built-in opponents were classic waypoint-followers — competent but robotic, and easy for experts to read. Realistic wheel-to-wheel racing — choosing when to brake at the limit of grip, how to defend a line, when to make a passing dive stick without causing a collision — turned out to be extremely hard to hand-author.
 
-So Sony AI trained it instead. **Gran Turismo Sophy** (published in *Nature*, 2022) is a **deep reinforcement-learning** agent (Chapter 13) that learned to drive *Gran Turismo* by trial and error over enormous simulated mileage, rewarded for lap time while penalized for going off-track or colliding. Sophy **beat the world's best human GT drivers** — and, notably, learned not just raw speed but **racecraft and sportsmanship**: tactical overtaking, blocking, and respecting racing etiquette (the reward was carefully shaped to discourage dirty driving). A version was later made playable inside *Gran Turismo 7*, so ordinary players could race a super-human learned opponent.
+So Sony AI trained it instead. **Gran Turismo Sophy** (published in *Nature*, 2022) is a **deep reinforcement-learning** agent (Chapter 14) that learned to drive *Gran Turismo* by trial and error over enormous simulated mileage, rewarded for lap time while penalized for going off-track or colliding. Sophy **beat the world's best human GT drivers** — and, notably, learned not just raw speed but **racecraft and sportsmanship**: tactical overtaking, blocking, and respecting racing etiquette (the reward was carefully shaped to discourage dirty driving). A version was later made playable inside *Gran Turismo 7*, so ordinary players could race a super-human learned opponent.
 
 Sophy is the clearest example in this book of *why* studios reach for learning: the classic waypoint stack had a ceiling that hand-authoring could not break through, and RL broke through it.
 
 ### Also notable
 
-- ***Forza Motorsport* Drivatar** — an **imitation-learning** system (Chapter 14) that learns *individual human players'* driving styles from their recorded laps, so your friends' "Drivatars" race in your game even when they're offline. Human-like, not super-human.
+- ***Forza Motorsport* Drivatar** — an **imitation-learning** system (Chapter 15) that learns *individual human players'* driving styles from their recorded laps, so your friends' "Drivatars" race in your game even when they're offline. Human-like, not super-human.
 
 ### Usage & limitations
 
@@ -429,7 +430,7 @@ The interesting design consequence is that RTS AI is a **balance problem**: a ru
 
 ### The frontier: *StarCraft II* and AlphaStar
 
-*StarCraft II* is the grand challenge of strategy AI: real-time, hidden information (fog of war), a vast action space, and long-horizon planning where an early economic choice pays off ten minutes later. Hand-authored AI plateaus well below expert human play. In 2019, DeepMind's **AlphaStar** — deep reinforcement learning with imitation-learning bootstrapping and league-style self-play (Chapter 13) — reached **Grandmaster** level, among the top handful of percent of human players. It's the strategy-genre counterpart to Sophy and OpenAI Five: the problem the classic toolbox couldn't fully crack, cracked by learning.
+*StarCraft II* is the grand challenge of strategy AI: real-time, hidden information (fog of war), a vast action space, and long-horizon planning where an early economic choice pays off ten minutes later. Hand-authored AI plateaus well below expert human play. In 2019, DeepMind's **AlphaStar** — deep reinforcement learning with imitation-learning bootstrapping and league-style self-play (Chapter 14) — reached **Grandmaster** level, among the top handful of percent of human players. It's the strategy-genre counterpart to Sophy and OpenAI Five: the problem the classic toolbox couldn't fully crack, cracked by learning.
 
 ### Usage & limitations
 
@@ -442,11 +443,72 @@ The manager stack is how essentially all shipping strategy games build their AI:
 
 ---
 
+## 13. Open-World AI — GTA, Streaming & the Performance Budget
+
+Open-world games — *Grand Theft Auto*, *Red Dead Redemption*, *Cyberpunk 2077*, *Assassin's Creed* — pose a problem no other genre does: they must make a **whole living city** feel real, with hundreds of pedestrians, cars, and animals visible at once, in a seamless map you can drive across for ten minutes without a loading screen. This chapter uses the *GTA* series as the worked example, because it is the definitive open-world AI showcase, and answers four questions: how are the NPCs designed, how do they fit a giant world and a huge crowd into a fixed memory and frame budget, whether generative AI can live there, and how you balance any AI you add against performance.
+
+### How the NPCs are designed
+
+The key realization is that a *GTA* crowd is not hundreds of hand-placed characters. It is a **population system** that continuously **spawns NPCs around the player and despawns them out of sight**, keeping only a bounded number "alive" at any moment. Where they spawn, and what kind, is driven by the zone (a beach, a business district, a slum), time of day, and a **density budget**. Walk down a street and the pedestrians ahead are being created just outside your view and quietly deleted behind you — the city is an illusion maintained in a bubble around you.
+
+Each pedestrian ("ped") and vehicle runs an authored decision architecture built from the techniques in Part II:
+
+- **A hierarchical task system.** Rockstar's RAGE engine drives peds with a tree of **tasks** (wander, cross the road, flee, take cover, enter vehicle) — effectively a behavior-tree/HTN hybrid where a high-level task expands into sub-tasks. This is the FSM/behavior-tree material of Chapter 4, scaled up.
+- **Scenarios.** The world is seeded with **scenario points** — annotations that say "a ped here can sit on this bench / lean on this wall / sweep / sunbathe / drink coffee." Ambient NPCs claim a nearby scenario and play its authored behavior, which is why the city looks *purposeful* rather than full of aimless walkers. Scenarios are a form of world-baked utility: cheap, designer-authored, location-specific behavior.
+- **Navigation on two graphs.** Peds path over a **navmesh** (Chapter 7); vehicles follow a **road/path-node network** — a graph of lane nodes with speeds, links, and junctions — with car-following, lane changes, and traffic-light obedience layered on top.
+- **Perception and an event system.** Peds have senses (sight cones, hearing) and an **event queue**. A gunshot, a car mounting the curb, or a punch generates an event that **interrupts** the current task with a higher-priority reaction — flee, cower, fight back, or call the police. This event-driven interruption is what makes the world feel reactive.
+- **The Wanted system.** The police are the game's showcase combat/pursuit AI: response escalates with wanted level, officers pathfind to you, use cover-based combat (Chapter 11), and — when they lose sight of you — switch to a **search** behavior around your **last-known position**, exactly the "when to re-plan / where did they go" problem of Chapter 7.
+
+None of this is one clever algorithm. It is the **classic toolbox, integrated and budgeted** — which is the real lesson of open-world AI.
+
+### Fitting a giant world and a huge crowd into a fixed budget
+
+A console has a fixed amount of memory and ~16 ms per frame. A *GTA* map is far too large to hold in memory and has far too many potential agents to simulate every frame. Four ideas make it possible, and they are the heart of open-world engineering:
+
+1. **Streaming.** The world is cut into cells/blocks, and assets — geometry, textures, collision, audio, and AI data — are **streamed off disk into memory as the player moves**, while cells left behind are evicted. Only a region around the player is ever resident. A dedicated **streaming system** predicts what you'll need next (based on position and velocity) and loads it just in time, which is how the map has no loading screens.
+2. **Level of Detail (LOD) — for geometry *and* AI.** Near the player, the city is full-detail and NPCs are fully simulated. Farther out, geometry drops to cheaper **LOD models** and eventually flat imposters; and — crucially — **AI runs at "level of detail" too**. This **LOD AI** is the single most important idea: a distant car isn't a full physics-and-AI vehicle, it's a cheap "dummy" that slides along a path node; a distant crowd is a few animated billboards. Full simulation is spent only where the player can actually perceive it.
+3. **Time-slicing.** Even the near NPCs are not all updated every frame. Their AI updates are **spread across frames** — a fraction of the agents "think" each frame on a rotating schedule, and distant ones think less often. This turns an unaffordable "N agents × every frame" into a fixed per-frame cost.
+4. **Density caps and culling.** Hard **caps** limit how many peds/vehicles are active at once (tuned per zone and per platform), and spatial partitioning plus occlusion culling keep queries and rendering bounded. The population system spawns up to the cap and no further.
+
+Put together: **stream a bubble of world around the player, simulate at full fidelity only what's close and visible, fake everything else with LOD, and spread the remaining work across frames.** That is how a "living city" fits in a fixed budget.
+
+### Can we use generative (LLM) AI agents in an open world?
+
+Yes — but not the way people first imagine. You **cannot** run an LLM for a whole *GTA* crowd: with hundreds of NPCs spawning and despawning every minute, a network round-trip and per-token cost *per NPC per line* is impossible on both latency and money, and it would break the population/streaming model entirely. The realistic architecture is **tiered and hybrid**:
+
+- **Most NPCs stay classic.** Ambient peds keep their cheap task/scenario AI — they don't need language.
+- **A few "hero" NPCs get generative AI.** A mission character, a recurring shopkeeper, a companion — a handful of important characters — can be LLM-driven for open-ended dialogue, exactly the persona + memory + tools pattern of Chapter 16.
+- **Use LLMs offline as a content tool.** Generate barks, ambient chatter, and quest text *ahead of time*, review it, and **bake it in** — you get generative *variety* with zero runtime cost or risk.
+- **Right-size the model.** A small **on-device** model can serve many nearby NPCs with low latency; a large **cloud** model is reserved for the few characters that justify it. **Cache** aggressively (identical situations reuse responses).
+- **Bound the LLM's authority with tools.** As in Chapter 16, let the character *talk* freely but only *act* through a small, validated set of game functions — so it can never break the simulation, the economy, or the rating.
+
+The blockers are the same as anywhere: latency, cost at scale, consistency with canon, determinism for QA, and content safety. Middleware such as **NVIDIA ACE**, **Inworld AI**, and **Convai** exists precisely to make the "a few talkable NPCs" tier practical, and mods have already put GPT-driven NPCs into *GTA V* as proof of concept.
+
+### Balancing performance against the AI you add
+
+Every technique above is really one discipline: **spend the frame budget where the player will notice, and nowhere else.** When you add *any* AI to a game — a smarter enemy, a learned policy, an LLM companion — apply the same playbook:
+
+- **Give AI a frame budget.** Decide up front that AI may use, say, 2–3 ms of the 16 ms frame, and design to it. Profile against it.
+- **Tier by importance and distance (LOD AI).** Full brains for on-screen, gameplay-relevant agents; cheap approximations or none for the rest. This one idea buys the most.
+- **Time-slice and stagger.** Don't run every agent every frame; amortize expensive decisions (planning, re-pathing, inference) over many frames and across agents.
+- **Go async and off the main thread.** Run pathfinding, planning, and model inference on worker threads or a frame or two behind, so a spike never stalls rendering.
+- **Cache and precompute.** Bake navmeshes, influence maps, and cover points offline; memoize plans and LLM responses; reuse results across similar agents.
+- **For learned models, right-size and batch.** Quantize and run small models on-device; **batch** inference calls; run them at a lower frequency than the render loop. For LLM NPCs specifically: stream tokens so dialogue *starts* fast, cap context length, and prefer many cheap calls to a small model over few calls to a giant one.
+- **Degrade gracefully.** When the budget is tight (a huge firefight, a dense crowd), *reduce AI fidelity* — fewer thinking agents, simpler behaviors — rather than dropping frames. Players forgive a slightly duller distant crowd; they don't forgive stutter.
+
+The through-line from *Doom*'s state machines to a hypothetical LLM-driven *GTA* companion is the same: **match the intelligence you pay for to the attention the player can actually give it.**
+
+### ▶ See it
+
+The interactive companion includes an **Open-World AI** viewport that visualizes exactly this: the player at the center of concentric **LOD-AI rings** (full-sim → simplified → streamed-out), NPCs spawning near you and despawning far away against a **density cap**, and a live **frame-budget meter** you can push by widening the full-simulation radius or toggling "LLM hero NPCs" — watch the cost, and the graceful degradation, in real time.
+
+---
+
 # Part IV — Modern, Learned AI
 
 The techniques in Part IV **learn** behavior from experience or data instead of having it authored. They solve problems the classic toolbox genuinely can't — but they cost data, compute, and predictability, which is why they supplement rather than replace the classics.
 
-## 13. Reinforcement Learning
+## 14. Reinforcement Learning
 
 In **reinforcement learning (RL)**, an agent learns by **trial and error** to maximize cumulative **reward**. It builds a **policy** — a mapping from states to actions — guided only by a reward signal from the environment, with no examples of "correct" play. The foundational algorithm is **Q-learning**, which learns a value **Q(s, a)** — the expected long-term reward of taking action *a* in state *s* — via the update:
 
@@ -477,7 +539,7 @@ where **α** is the learning rate and **γ** discounts future reward. Store Q in
 - [`samples/rl/q_learning.py`](../samples/rl/q_learning.py) — tabular Q-learning discovers the optimal path through a maze (avoiding a pit) purely from reward, then prints the learned policy.
 - [`samples/rl/sophy_racing_qlearn.py`](../samples/rl/sophy_racing_qlearn.py) — the same algorithm applied to *driving*: with no programmed racing line, the agent learns a speed profile that brakes for corners and accelerates on straights — Sophy's core idea at teaching scale.
 
-## 14. Imitation Learning & Other ML
+## 15. Imitation Learning & Other ML
 
 Not all learned AI is reward-driven. **Imitation learning (behavior cloning)** trains a model to *copy human play* from recorded data — no reward function, just examples. The celebrated shipping example is ***Forza*** **Drivatar**: it learns *individual players'* racing styles from their laps, so your friends' AI "ghosts" race with their real habits and quirks even when they're offline. The result is **human-like** opponents (mistakes and all), which is often more fun than the flawless lines of an RL agent.
 
@@ -488,7 +550,7 @@ Other ML quietly shapes games without ever being the "opponent":
 
 The practical frontier is **hybrid systems**: a behavior tree for structure, utility scoring for decisions, learned sub-policies for hard motor skills (aiming, driving), an influence map for tactics, and an LLM for dialogue — *each technique where it is strongest.* No serious game is "all classic" or "all learned."
 
-## 15. Generative AI Agents (LLMs)
+## 16. Generative AI Agents (LLMs)
 
 The newest genre of game AI puts a **Large Language Model (LLM)** at the heart of a character or agent. Instead of a fixed dialogue tree, the NPC has:
 
@@ -515,7 +577,7 @@ The player can now say **anything**, and the NPC responds in character and acts 
 
 # Part V — Practice
 
-## 16. Choosing an Approach
+## 17. Choosing an Approach
 
 There is no "best" technique — only the best fit for a specific job under the constraints of Chapter 1. Use this as a starting decision guide:
 
@@ -541,7 +603,7 @@ There is no "best" technique — only the best fit for a specific job under the 
 4. **Telegraph everything.** The player only credits intelligence they can perceive.
 5. **Tune for fun, not for winning.** Always.
 
-## 17. Exercises
+## 18. Exercises
 
 Work these against the companion code in [`../samples`](../samples).
 
@@ -566,7 +628,12 @@ Work these against the companion code in [`../samples`](../samples).
 14. In `q_learning.py`, add a second pit and a moving reward. Does tabular Q-learning still converge?
 15. In `generative_npc.py`, add a new tool (e.g., `start_duel`) and a guardrail that prevents the NPC from giving the same quest twice.
 
-## 18. Glossary
+**Open world & scale**
+16. Sketch a population system: spawn NPCs around a moving player up to a density cap and despawn them beyond a radius. What's the smallest cap that still feels "alive"?
+17. Add **LOD AI**: give each NPC a tier (full / simplified / dummy) based on distance to the player, and **time-slice** so only a fixed number "think" per frame. Measure the cost vs. simulating everyone every frame.
+18. Design the tiering for an LLM companion in an open world: which decisions go to the LLM, which stay classic, and where do you cache? Estimate the per-minute cost at 1, 10, and 100 talkable NPCs.
+
+## 19. Glossary
 
 - **A\*** — best-first pathfinding minimizing `f = g + h`; optimal with an admissible heuristic.
 - **Admissible heuristic** — a heuristic that never overestimates remaining cost; required for A\* optimality.
@@ -581,24 +648,28 @@ Work these against the companion code in [`../samples`](../samples).
 - **Imitation learning** — training a model to copy recorded human behavior (e.g., Drivatar).
 - **Line-of-sight (LOS)** — whether one point can "see" another unobstructed; gates most perception.
 - **LLM** — Large Language Model; the engine of generative NPCs.
+- **LOD AI (level-of-detail AI)** — simulating near/visible agents at full fidelity and distant ones cheaply (or not at all); the key to open-world scale.
 - **MCTS** — Monte-Carlo Tree Search; select/expand/simulate/backpropagate using UCB1.
 - **Minimax / Alpha-Beta** — optimal adversarial search / its pruning optimization.
 - **Navmesh** — navigation mesh; walkable space as convex polygons for efficient pathfinding.
 - **PCG / PCGML** — Procedural Content Generation / its machine-learned variant.
 - **PID controller** — proportional-integral-derivative control; used for steering/speed.
 - **Policy** — a mapping from state to action; what an RL agent learns.
+- **Population system** — spawns NPCs around the player up to a density cap and despawns them out of view, creating a "living" crowd within a bounded budget.
 - **PPO / DQN** — Proximal Policy Optimization / Deep Q-Network; deep-RL algorithms.
 - **Pure pursuit / look-ahead** — steering toward a point ahead on a path.
 - **Q-learning** — value-based RL learning `Q(s,a)`.
 - **Reward hacking** — an RL agent exploiting a loophole in the reward instead of the intended behavior.
 - **Rubber-banding** — DDA in racing: speeding up trailing AI, slowing leaders.
 - **Steering behaviors** — small composable forces (seek, flee, arrive, wander…) blended into movement.
+- **Streaming** — loading world assets (geometry, AI data) from disk as the player moves and evicting what's left behind, so a huge map fits in fixed memory.
 - **Suppression** — pinning a target with fire to reduce its effectiveness and force it into cover.
 - **Telegraphing** — making the AI's intent legible via animation/audio so players perceive intelligence.
+- **Time-slicing** — spreading agents' AI updates across many frames instead of updating all of them every frame, to bound per-frame cost.
 - **UCB1** — the exploration/exploitation formula MCTS uses in selection.
 - **Utility AI** — scoring actions by a utility function and picking the best; drives *The Sims* and 4X production.
 
-## 19. Further Reading
+## 20. Further Reading
 
 **Books**
 - Ian Millington & John Funge, *Artificial Intelligence for Games* — the standard text on the classic toolbox.

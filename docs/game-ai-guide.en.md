@@ -6,10 +6,11 @@
 
 > 📖 **Want the full, book-length treatment?** This page is the concise guide.
 > The complete illustrated textbook — with genre deep-dives on **Mario Kart &
-> Gran Turismo Sophy, Doom / F.E.A.R. / Rainbow Six / Apex, and Civilization /
-> Red Alert / StarCraft**, plus chapters on minimax, MCTS, GOAP, influence maps,
+> Gran Turismo Sophy, Doom / F.E.A.R. / Rainbow Six / Apex, Civilization /
+> Red Alert / StarCraft, and open-world GTA (NPC design, streaming, LOD AI & the
+> performance budget)**, plus chapters on minimax, MCTS, GOAP, influence maps,
 > exercises and a glossary — is **[Game AI: From Pac-Man to GT Sophy](game-ai-book.en.md)**
-> (also available as a [Word document](game-ai-book.docx)).
+> ([中文版](game-ai-book.zh.md); also as Word: [EN](game-ai-book.docx) · [中文](game-ai-book.zh.docx)).
 
 ---
 

@@ -128,13 +128,16 @@
   <div class="wrap">
     <div class="eyebrow mono">Game AI · Debug Viewports</div>
     <h1>Watch the algorithms <span class="hl">think</span>.</h1>
-    <p class="lede">Three interactive debug views of the classic and not-so-classic AI behind game
-      characters — the same techniques dissected in the companion book and runnable Python. Poke them,
-      pause them, and try to beat the one that can't be beaten.</p>
+    <p class="lede">Seven interactive debug views of the classic and not-so-classic AI behind game
+      characters — from Pac-Man's ghosts to an open-world streaming budget — the same techniques
+      dissected in the companion book and runnable Python. Poke them, pause them, and try to beat the
+      one that can't be beaten.</p>
     <div class="hero-meta mono">
-      <span class="chip"><b>01</b> &nbsp;Pac-Man ghost personalities</span>
-      <span class="chip"><b>02</b> &nbsp;FPS suppress &amp; flank</span>
-      <span class="chip"><b>03</b> &nbsp;Unbeatable minimax</span>
+      <span class="chip"><b>movement</b> &nbsp;ghosts · flocking · A*</span>
+      <span class="chip"><b>tactics</b> &nbsp;suppress &amp; flank</span>
+      <span class="chip"><b>search</b> &nbsp;unbeatable minimax</span>
+      <span class="chip"><b>learning</b> &nbsp;live Q-learning</span>
+      <span class="chip"><b>scale</b> &nbsp;open-world streaming</span>
     </div>
   </div>
 </header>
@@ -241,11 +244,141 @@
   </div>
 </section>
 
+<!-- ───────────────── MODULE 04 · BOIDS ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Movement &amp; swarms · <b>flocking (boids)</b></div>
+      <h2 class="m-title">A swarm with no leader</h2>
+      <p class="m-sub">Each dot follows three local rules — <em>separation</em>, <em>alignment</em>,
+        <em>cohesion</em> — plus a pull toward the target. The coordinated flock isn't scripted; it
+        <em>emerges</em> from every boid obeying the same rules with no central brain.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport">
+        <div class="vp-bar mono"><span><span class="dot"></span>BOIDS.SIM</span><span id="boid-count">60 boids</span></div>
+        <canvas id="boid-canvas" width="460" height="300" aria-label="Boids flocking simulation"></canvas>
+        <div class="hud mono" id="boid-hud">Flocking…</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="boid-play">Pause</button>
+          <button class="ctl" id="boid-seek" aria-pressed="true">Hunt target: on</button>
+          <button class="ctl" id="boid-scatter">Scatter</button>
+        </div>
+        <p>Move nothing and watch order appear from local rules alone. With <strong>hunt</strong> on, a
+          fourth "seek" rule turns the flock into a coordinated pack — the classic way games move bats,
+          fish, or a cloud of drones cheaply.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── MODULE 05 · A* ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Movement &amp; navigation · <b>A\* pathfinding</b></div>
+      <h2 class="m-title">Finding the way, tile by tile</h2>
+      <p class="m-sub">The pursuer runs <strong>A*</strong> every step to chase a moving target around
+        walls. The faint cells are the search <em>frontier</em> it explored; the bright line is the
+        shortest path it committed to — re-planned continuously as the target flees.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport">
+        <div class="vp-bar mono"><span><span class="dot"></span>ASTAR.SIM</span><span id="astar-nodes">expanded: 0</span></div>
+        <canvas id="astar-canvas" width="450" height="330" aria-label="A star pathfinding simulation"></canvas>
+        <div class="hud mono" id="astar-hud">Pathfinding…</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="astar-play">Pause</button>
+          <button class="ctl" id="astar-step">Step</button>
+          <button class="ctl" id="astar-search" aria-pressed="true">Show search: on</button>
+        </div>
+        <p>A* expands the frontier cell with the best <span class="mono">f = g + h</span> score —
+          balancing distance travelled against an estimate of distance remaining. The
+          <span class="mono">expanded</span> counter is how many cells it touched to find each path.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── MODULE 06 · Q-LEARNING ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Learning · <b>reinforcement learning</b></div>
+      <h2 class="m-title">An agent learning, live</h2>
+      <p class="m-sub">Tabular <strong>Q-learning</strong> trains in real time on a grid world: reach the
+        goal (green) for reward, fall in the pit (red) for a penalty. Watch the value map light up and the
+        policy arrows snap into a route — learned from reward alone, no map given.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport">
+        <div class="vp-bar mono"><span><span class="dot"></span>QLEARN.SIM</span><span id="q-ep">episode 0</span></div>
+        <canvas id="q-canvas" width="420" height="300" aria-label="Q-learning grid world"></canvas>
+        <div class="hud mono" id="q-hud">Training…</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="q-play">Pause</button>
+          <button class="ctl" id="q-reset">Restart training</button>
+        </div>
+        <p>Each cell's shade is its learned value <span class="mono">max Q(s,a)</span> — brighter means
+          "closer to reward." The arrows are the greedy <strong>policy</strong>. Early on it's noise;
+          after a few hundred episodes a clean path to the goal emerges, skirting the pit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── MODULE 07 · OPEN WORLD ───────────────── -->
+<section class="module">
+  <div class="wrap">
+    <div class="m-head">
+      <div class="m-eyebrow mono">Scale &amp; performance · <b>open-world streaming &amp; LOD AI</b></div>
+      <h2 class="m-title">How a whole city fits in the budget</h2>
+      <p class="m-sub">The trick behind GTA-scale crowds: a <strong>population system</strong> spawns NPCs
+        around the player and despawns them out of range, and <strong>LOD AI</strong> gives full brains
+        only to those close enough to matter. Push the full-sim radius (or add LLM "hero" NPCs) and watch
+        the frame budget — and the graceful degradation.</p>
+    </div>
+    <div class="grid">
+      <div class="viewport">
+        <div class="vp-bar mono"><span><span class="dot"></span>OPENWORLD.SIM</span><span id="ow-pop">pop 0</span></div>
+        <canvas id="ow-canvas" width="460" height="330" aria-label="Open world streaming and LOD AI simulation"></canvas>
+        <div class="hud mono" id="ow-hud">Streaming…</div>
+      </div>
+      <div class="panel">
+        <h4>Controls</h4>
+        <div class="controls">
+          <button class="ctl pri" id="ow-play">Pause</button>
+          <button class="ctl" id="ow-llm" aria-pressed="false">LLM hero NPCs: off</button>
+        </div>
+        <label class="mono" style="display:block;font-size:12px;color:var(--muted);margin:2px 0 14px">
+          Full-sim radius
+          <input id="ow-radius" type="range" min="60" max="200" value="110" style="width:100%;margin-top:6px">
+        </label>
+        <div class="legend">
+          <div class="row"><span class="sw" style="background:#38bdf8"></span><span><b>Full-sim</b> — near the player: complete AI, physics, animation.</span></div>
+          <div class="row"><span class="sw" style="background:#7c8aa0"></span><span><b>Simplified</b> — mid-range: cheap "dummy" behaviour on path nodes.</span></div>
+          <div class="row"><span class="sw" style="background:#33404f"></span><span><b>Streamed-out</b> — beyond range: not simulated at all (despawned).</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     Interactive companion to <b>Game AI: From Pac-Man to GT Sophy</b>. Each viewport is a live port of a
-    runnable Python sample — <code>classic/pacman_ghosts.py</code>, <code>fps/tactical_fps.py</code>, and
-    <code>classic/minimax_tictactoe.py</code> — from the GameAI repository.
+    runnable Python sample from the GameAI repository — ghost personalities, boids, A* pathfinding, tactical
+    squads, minimax, Q-learning, and an open-world streaming/LOD budget — spanning movement, tactics,
+    search, learning, and scale.
   </div>
 </footer>
 
@@ -538,6 +671,212 @@ const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.getElementById("ttt-first").onclick=e=>{ aiFirst=!aiFirst;
     e.target.setAttribute("aria-pressed",aiFirst); e.target.textContent= aiFirst?"You move first":"AI moves first"; reset(); };
   reset();
+})();
+
+/* ==================================================================== */
+/* MODULE 04 — BOIDS FLOCKING                                           */
+/* ==================================================================== */
+(function(){
+  const cv=document.getElementById("boid-canvas"),ctx=cv.getContext("2d");
+  const N=60; let boids=[],running=!REDUCED,seek=true,target,tt=0;
+  function reset(){ boids=[]; for(let i=0;i<N;i++) boids.push({
+    x:Math.random()*cv.width,y:Math.random()*cv.height,
+    vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2}); }
+  function tick(){
+    tt+=0.02; target={x:cv.width/2+Math.cos(tt)*cv.width*0.32,y:cv.height/2+Math.sin(tt*1.3)*cv.height*0.32};
+    for(const b of boids){
+      let sx=0,sy=0,ax=0,ay=0,cx=0,cy=0,n=0;
+      for(const o of boids){ if(o===b) continue;
+        const dx=b.x-o.x,dy=b.y-o.y,d=dx*dx+dy*dy;
+        if(d<3600&&d>0){ n++; ax+=o.vx; ay+=o.vy; cx+=o.x; cy+=o.y;
+          if(d<600){ sx+=dx/d*20; sy+=dy/d*20; } } }
+      if(n){ ax/=n;ay/=n;cx/=n;cy/=n;
+        b.vx+=(ax-b.vx)*0.05+(cx-b.x)*0.0008+sx*0.02;
+        b.vy+=(ay-b.vy)*0.05+(cy-b.y)*0.0008+sy*0.02; }
+      if(seek){ b.vx+=(target.x-b.x)*0.0012; b.vy+=(target.y-b.y)*0.0012; }
+      const sp=Math.hypot(b.vx,b.vy),max=2.6; if(sp>max){b.vx=b.vx/sp*max;b.vy=b.vy/sp*max;}
+      b.x+=b.vx; b.y+=b.vy;
+      if(b.x<0)b.x+=cv.width; if(b.x>cv.width)b.x-=cv.width;
+      if(b.y<0)b.y+=cv.height; if(b.y>cv.height)b.y-=cv.height;
+    }
+  }
+  function draw(){
+    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
+    if(seek&&target){ ctx.strokeStyle="rgba(245,166,35,.6)"; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(target.x,target.y,7,0,7); ctx.stroke(); }
+    for(const b of boids){ const a=Math.atan2(b.vy,b.vx);
+      ctx.fillStyle="#38bdf8"; ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(a);
+      ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(-4,3); ctx.lineTo(-4,-3); ctx.closePath(); ctx.fill();
+      ctx.restore(); }
+  }
+  let acc=0,last=0;
+  function loop(ts){ const dt=ts-last;last=ts; if(running){acc+=dt; if(acc>16){acc=0;tick();}} draw(); requestAnimationFrame(loop); }
+  document.getElementById("boid-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+  document.getElementById("boid-seek").onclick=e=>{seek=!seek;e.target.setAttribute("aria-pressed",seek);
+    e.target.textContent="Hunt target: "+(seek?"on":"off");
+    document.getElementById("boid-hud").textContent=seek?"Flock hunting the target as one pack":"Free flocking — order from local rules";};
+  document.getElementById("boid-scatter").onclick=()=>{ for(const b of boids){b.vx=(Math.random()-.5)*8;b.vy=(Math.random()-.5)*8;} };
+  reset(); if(REDUCED){document.getElementById("boid-play").textContent="Play";draw();} requestAnimationFrame(loop);
+})();
+
+/* ==================================================================== */
+/* MODULE 05 — A* PATHFINDING                                           */
+/* ==================================================================== */
+(function(){
+  const M=[
+    "###############","#.....#.......#","#.###.#.#####.#","#.#...#.#...#.#",
+    "#.#.###.#.#.#.#","#.#.....#.#...#","#.#######.###.#","#.........#...#",
+    "#.#######.#.#.#","#.......#...#.#","#######.#####.#","#.......#.....#",
+    "###############"];
+  const W=M[0].length,H=M.length,TS=30;
+  const cv=document.getElementById("astar-canvas"),ctx=cv.getContext("2d"); cv.width=W*TS;cv.height=H*TS;
+  const wall=(x,y)=>x<0||y<0||x>=W||y>=H||M[y][x]==="#";
+  const key=(x,y)=>x+","+y;
+  function astar(s,g){ // returns {path, closed}
+    const open=[[man(s,g),0,s]], came={}, gsc={[key(...s)]:0}, closed=new Set();
+    while(open.length){ open.sort((a,b)=>a[0]-b[0]); const [,gc,c]=open.shift();
+      const ck=key(...c); if(closed.has(ck)) continue; closed.add(ck);
+      if(c[0]===g[0]&&c[1]===g[1]){ const path=[]; let k=ck;
+        while(k!==undefined){ const [px,py]=k.split(",").map(Number); path.push([px,py]); k=came[k]; }
+        return {path:path.reverse(),closed}; }
+      for(const[dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=c[0]+dx,ny=c[1]+dy;
+        if(wall(nx,ny)) continue; const nk=key(nx,ny); const ng=gc+1;
+        if(ng<(gsc[nk]??1e9)){ gsc[nk]=ng; came[nk]=ck; open.push([ng+man([nx,ny],g),ng,[nx,ny]]); } } }
+    return {path:[],closed}; }
+  function man(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]);}
+  let chaser=[1,1],target=[W-2,H-2],tphase=0,running=!REDUCED,showSearch=true,last={path:[],closed:new Set()};
+  const spots=[[W-2,H-2],[1,H-2],[W-2,1],[7,5],[1,1]];
+  function tick(){
+    tphase=(tphase+1)%16; if(tphase===0){ target=spots[Math.floor(Math.random()*spots.length)]; }
+    last=astar(chaser,target);
+    if(last.path.length>1){ chaser=last.path[1]; }
+    document.getElementById("astar-nodes").textContent="expanded: "+last.closed.size;
+    document.getElementById("astar-hud").innerHTML="Chasing target · path length <span class='k'>"+last.path.length+"</span>";
+  }
+  function draw(){
+    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(M[y][x]==="#"){ctx.fillStyle="#243244";ctx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2);}
+    if(showSearch){ ctx.fillStyle="rgba(56,189,248,.13)"; for(const ck of last.closed){ const [x,y]=ck.split(",").map(Number); ctx.fillRect(x*TS+4,y*TS+4,TS-8,TS-8);} }
+    ctx.strokeStyle="#38bdf8"; ctx.lineWidth=3; ctx.beginPath();
+    last.path.forEach((p,i)=>{ const X=p[0]*TS+TS/2,Y=p[1]*TS+TS/2; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }); ctx.stroke();
+    ctx.fillStyle="#f5a623"; ctx.beginPath(); ctx.arc(target[0]*TS+TS/2,target[1]*TS+TS/2,TS*0.3,0,7); ctx.fill();
+    ctx.fillStyle="#a78bfa"; ctx.beginPath(); ctx.arc(chaser[0]*TS+TS/2,chaser[1]*TS+TS/2,TS*0.32,0,7); ctx.fill();
+  }
+  let acc=0,lt=0;
+  function loop(ts){const dt=ts-lt;lt=ts; if(running){acc+=dt; if(acc>260){acc=0;tick();}} draw(); requestAnimationFrame(loop);}
+  document.getElementById("astar-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+  document.getElementById("astar-step").onclick=()=>{tick();draw();};
+  document.getElementById("astar-search").onclick=e=>{showSearch=!showSearch;e.target.setAttribute("aria-pressed",showSearch);e.target.textContent="Show search: "+(showSearch?"on":"off");};
+  tick(); if(REDUCED){document.getElementById("astar-play").textContent="Play";} draw(); requestAnimationFrame(loop);
+})();
+
+/* ==================================================================== */
+/* MODULE 06 — Q-LEARNING GRID WORLD                                    */
+/* ==================================================================== */
+(function(){
+  const GW=7,GH=5,TS=60;
+  const cv=document.getElementById("q-canvas"),ctx=cv.getContext("2d"); cv.width=GW*TS;cv.height=GH*TS;
+  const GOAL=[6,0],PIT=[6,2],WALLS=new Set(["3,1","3,2","3,3"]);
+  const ACTS=[[0,-1],[0,1],[-1,0],[1,0]]; // up down left right
+  const key=(x,y)=>x+","+y;
+  const blocked=(x,y)=>x<0||y<0||x>=GW||y>=GH||WALLS.has(key(x,y));
+  let Q,ep,running=!REDUCED;
+  function reset(){ Q={}; ep=0; }
+  function q(s){ return Q[s]||(Q[s]=[0,0,0,0]); }
+  function episode(){
+    let x=0,y=GH-1; const eps=Math.max(0.05,1-ep/400);
+    for(let t=0;t<60;t++){ const s=key(x,y); const qs=q(s);
+      const a = Math.random()<eps ? Math.floor(Math.random()*4) : qs.indexOf(Math.max(...qs));
+      let nx=x+ACTS[a][0],ny=y+ACTS[a][1]; if(blocked(nx,ny)){nx=x;ny=y;}
+      let r=-1,done=false;
+      if(nx===GOAL[0]&&ny===GOAL[1]){r=100;done=true;} else if(nx===PIT[0]&&ny===PIT[1]){r=-100;done=true;}
+      const ns=key(nx,ny); const target=r+(done?0:0.9*Math.max(...q(ns)));
+      qs[a]+=0.3*(target-qs[a]); x=nx;y=ny; if(done)break; }
+    ep++;
+  }
+  function draw(){
+    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
+    let maxv=1; for(const k in Q){ maxv=Math.max(maxv,Math.max(...Q[k])); }
+    for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){ const s=key(x,y);
+      if(WALLS.has(s)){ ctx.fillStyle="#243244"; ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4); continue; }
+      if(x===GOAL[0]&&y===GOAL[1]){ ctx.fillStyle="#12694a"; }
+      else if(x===PIT[0]&&y===PIT[1]){ ctx.fillStyle="#7a2036"; }
+      else { const v=Math.max(0,Math.max(...(Q[s]||[0]))); const t=v/maxv;
+        ctx.fillStyle="rgba(56,189,248,"+(0.06+0.5*t).toFixed(3)+")"; }
+      ctx.fillRect(x*TS+2,y*TS+2,TS-4,TS-4);
+      // policy arrow
+      if(Q[s]&&!(x===GOAL[0]&&y===GOAL[1])&&!(x===PIT[0]&&y===PIT[1])){
+        const a=Q[s].indexOf(Math.max(...Q[s])); const cx=x*TS+TS/2,cy=y*TS+TS/2;
+        const dx=ACTS[a][0],dy=ACTS[a][1]; ctx.strokeStyle="#dbe7f2"; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(cx-dx*10,cy-dy*10); ctx.lineTo(cx+dx*10,cy+dy*10); ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx+dx*10,cy+dy*10,2.5,0,7); ctx.fillStyle="#dbe7f2"; ctx.fill(); }
+    }
+    ctx.fillStyle="#e6edf3"; ctx.font="600 15px ui-monospace,monospace";
+    ctx.fillText("G",GOAL[0]*TS+TS/2-5,GOAL[1]*TS+TS/2+5);
+    ctx.fillText("✕",PIT[0]*TS+TS/2-6,PIT[1]*TS+TS/2+5);
+  }
+  let acc=0,lt=0;
+  function loop(ts){const dt=ts-lt;lt=ts; if(running){acc+=dt; if(acc>40){acc=0; for(let i=0;i<3;i++) episode();
+    document.getElementById("q-ep").textContent="episode "+ep;
+    document.getElementById("q-hud").innerHTML= ep<80?"Exploring — mostly noise so far":"Policy converged — arrows trace the route to <span class='k'>G</span>";}} draw(); requestAnimationFrame(loop);}
+  document.getElementById("q-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+  document.getElementById("q-reset").onclick=()=>{reset();draw();document.getElementById("q-ep").textContent="episode 0";};
+  reset(); if(REDUCED){document.getElementById("q-play").textContent="Play";} draw(); requestAnimationFrame(loop);
+})();
+
+/* ==================================================================== */
+/* MODULE 07 — OPEN-WORLD STREAMING & LOD AI                            */
+/* ==================================================================== */
+(function(){
+  const cv=document.getElementById("ow-canvas"),ctx=cv.getContext("2d");
+  const CX=cv.width/2,CY=cv.height/2, CULL=200, CAP=90;
+  let npcs=[],running=!REDUCED,llm=false,fullR=110,pa=0,budget=0;
+  function spawn(){ const ang=Math.random()*7, d=fullR*0.4+Math.random()*(CULL-fullR*0.4);
+    // spawn relative to player (player is centre); store world offset that drifts
+    npcs.push({ox:Math.cos(ang)*d,oy:Math.sin(ang)*d,vx:(Math.random()-.5)*0.4,vy:(Math.random()-.5)*0.4,
+      hero:llm&&Math.random()<0.12}); }
+  function tick(){
+    pa+=0.015; // player drifts through the world -> everything streams past
+    const pdx=Math.cos(pa)*1.4, pdy=Math.sin(pa*1.2)*1.4;
+    for(const n of npcs){ n.ox+=n.vx-pdx; n.oy+=n.vy-pdy; }
+    npcs=npcs.filter(n=>Math.hypot(n.ox,n.oy)<CULL);        // despawn out of range
+    while(npcs.length<CAP) spawn();                          // top up to the cap
+    // budget: full-sim NPCs cost 1, hero LLM NPCs cost 8
+    let full=0,simp=0,hero=0;
+    for(const n of npcs){ const d=Math.hypot(n.ox,n.oy);
+      if(d<fullR){ full++; if(n.hero) hero++; } else simp++; }
+    budget = Math.min(140, full*1.0 + hero*8 + simp*0.15);
+    document.getElementById("ow-pop").textContent="pop "+npcs.length;
+    const over=budget>100;
+    document.getElementById("ow-hud").innerHTML="full-sim <span class='k'>"+full+"</span> · simplified <span class='k'>"+simp+"</span>"+(llm?" · LLM heroes <span class='k'>"+hero+"</span>":"")+" · budget <span class='k' style='color:"+(over?'#fb6f8e':'#34d399')+"'>"+budget.toFixed(0)+"%</span>"+(over?" — DEGRADING":"");
+    return over;
+  }
+  function draw(over){
+    ctx.fillStyle="#080d13"; ctx.fillRect(0,0,cv.width,cv.height);
+    // rings
+    ctx.strokeStyle="rgba(56,189,248,.25)"; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.arc(CX,CY,fullR,0,7); ctx.stroke();
+    ctx.strokeStyle="rgba(124,138,160,.2)"; ctx.beginPath(); ctx.arc(CX,CY,CULL,0,7); ctx.stroke(); ctx.setLineDash([]);
+    for(const n of npcs){ const d=Math.hypot(n.ox,n.oy); const X=CX+n.ox,Y=CY+n.oy;
+      let col; if(d<fullR){ col = n.hero? "#a78bfa" : (over && Math.random()<0.0? "#7c8aa0":"#38bdf8"); }
+      else col="#7c8aa0";
+      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X,Y, n.hero?3.4:2.4,0,7); ctx.fill();
+    }
+    // player
+    ctx.fillStyle="#f5a623"; ctx.beginPath(); ctx.arc(CX,CY,5,0,7); ctx.fill();
+    ctx.strokeStyle="rgba(245,166,35,.5)"; ctx.beginPath(); ctx.arc(CX,CY,8,0,7); ctx.stroke();
+    // budget bar
+    const bw=cv.width-20; ctx.fillStyle="rgba(255,255,255,.08)"; ctx.fillRect(10,cv.height-12,bw,5);
+    ctx.fillStyle= budget>100?"#fb6f8e":"#34d399"; ctx.fillRect(10,cv.height-12,bw*Math.min(1,budget/100),5);
+    ctx.fillStyle="rgba(255,255,255,.25)"; ctx.fillRect(10+bw,cv.height-14,1,9);
+  }
+  let acc=0,lt=0,over=false;
+  function loop(ts){const dt=ts-lt;lt=ts; if(running){acc+=dt; if(acc>60){acc=0; over=tick();}} draw(over); requestAnimationFrame(loop);}
+  document.getElementById("ow-play").onclick=e=>{running=!running;e.target.textContent=running?"Pause":"Play";};
+  document.getElementById("ow-llm").onclick=e=>{llm=!llm;e.target.setAttribute("aria-pressed",llm);
+    e.target.textContent="LLM hero NPCs: "+(llm?"on":"off"); if(!llm) npcs.forEach(n=>n.hero=false);};
+  document.getElementById("ow-radius").oninput=e=>{fullR=+e.target.value;};
+  for(let i=0;i<CAP;i++) spawn(); tick(); if(REDUCED){document.getElementById("ow-play").textContent="Play";} draw(false); requestAnimationFrame(loop);
 })();
 </script>
 

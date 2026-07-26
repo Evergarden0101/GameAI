@@ -19,28 +19,35 @@ modern learned AI, with exercises and a glossary.
 
 | Format · 格式 | Link · 链接 |
 |---|---|
-| 📘 **Book (Markdown)** · 教程书 | [`docs/game-ai-book.en.md`](docs/game-ai-book.en.md) |
-| 📄 **Book (Word / .docx)** · Word 版 | [`docs/game-ai-book.docx`](docs/game-ai-book.docx) |
-| 📗 Concise guide (English) · 简明指南 | [`docs/game-ai-guide.en.md`](docs/game-ai-guide.en.md) |
-| 📗 简明指南（中文） | [`docs/game-ai-guide.zh.md`](docs/game-ai-guide.zh.md) |
+| 📘 **Book — English (Markdown)** · 英文教程书 | [`docs/game-ai-book.en.md`](docs/game-ai-book.en.md) |
+| 📘 **书 — 中文（Markdown）** · 中文教程书 | [`docs/game-ai-book.zh.md`](docs/game-ai-book.zh.md) |
+| 📄 **Book — English (Word)** · Word 英文版 | [`docs/game-ai-book.docx`](docs/game-ai-book.docx) |
+| 📄 **书 — 中文（Word）** · Word 中文版 | [`docs/game-ai-book.zh.docx`](docs/game-ai-book.zh.docx) |
+| 📗 Concise guides · 简明指南 | [English](docs/game-ai-guide.en.md) · [中文](docs/game-ai-guide.zh.md) |
 
 **What it covers:** what game AI really is (fun over optimal) · FSMs & behavior
 trees · utility AI & GOAP · steering & flocking · A\* pathfinding · minimax,
 alpha-beta & MCTS · influence maps & PCG · **racing (Mario Kart, Gran Turismo
 Sophy)** · **shooters (Doom, F.E.A.R., Rainbow Six, Apex)** · **strategy
-(Civilization, Command & Conquer / Red Alert, StarCraft)** · reinforcement
+(Civilization, Command & Conquer / Red Alert, StarCraft)** · **open world (GTA —
+NPC design, streaming, LOD AI & the performance budget)** · reinforcement
 learning · imitation learning · generative (LLM) agents.
 
 ## 🕹️ Interactive lab · 交互式实验室
 
 A self-contained web page — [`web/gameai-lab.html`](web/gameai-lab.html) — with
-**three live, interactive debug viewports**: Pac-Man ghost personalities, an FPS
-suppress-and-flank squad, and a playable **unbeatable minimax** board. Open it in
-any browser (no build, no dependencies), or view it as an
+**seven live, interactive debug viewports** spanning movement, tactics, search,
+learning, and scale: Pac-Man ghost personalities, boids flocking, A\* pathfinding,
+an FPS suppress-and-flank squad, a playable **unbeatable minimax** board, live
+**Q-learning**, and an **open-world streaming / LOD-AI** budget (the GTA-scale
+question). Open it in any browser (no build, no dependencies), or view everything
+at one link as an
 [Artifact](https://claude.ai/code/artifact/4d503b43-4225-4339-9777-3c8058a60c02).
 
-一个自包含网页——内含三个可交互的调试视图：吃豆人幽灵性格、FPS 压制包抄小队，
-以及可对弈的“不可战胜”井字棋。用浏览器直接打开即可，无需构建或依赖。
+一个自包含网页——内含**七个**可交互的调试视图，横跨移动、战术、搜索、学习与规模：
+吃豆人幽灵性格、Boids 集群、A\* 寻路、FPS 压制包抄小队、可对弈的“不可战胜”井字棋、
+实时 Q-learning，以及**开放世界流式加载 / LOD-AI** 帧预算（GTA 级难题）。用浏览器直接
+打开即可，或在一个链接里查看全部。
 
 ## 💻 The samples · 示例代码
 
@@ -87,7 +94,9 @@ GameAI/
 ├── README.md                       ← you are here · 你在这里
 ├── docs/
 │   ├── game-ai-book.en.md          ← the full textbook (English)
+│   ├── game-ai-book.zh.md          ← 完整教程书（中文）
 │   ├── game-ai-book.docx           ← the textbook as a Word document
+│   ├── game-ai-book.zh.docx        ← 教程书 Word 中文版
 │   ├── game-ai-guide.en.md         ← concise guide (English)
 │   └── game-ai-guide.zh.md         ← 简明指南（中文）
 ├── scripts/
@@ -106,11 +115,14 @@ GameAI/
 
 ## Rebuilding the Word document · 重新生成 Word 文档
 
-The `.docx` is generated from the Markdown book (requires `python-docx`):
+Both `.docx` editions are generated from the Markdown books (requires `python-docx`):
 
 ```bash
 pip install python-docx
-python scripts/md_to_docx.py docs/game-ai-book.en.md
+python scripts/md_to_docx.py docs/game-ai-book.en.md   # -> docs/game-ai-book.docx
+python scripts/md_to_docx.py docs/game-ai-book.zh.md "游戏 AI：从吃豆人到 GT 赛车 Sophy" \
+       "一本图文并茂、动手实践的游戏角色 AI 技术指南" "GameAI 仓库的配套教程书" \
+       docs/game-ai-book.zh.docx                        # Chinese edition (CJK fonts)
 ```
 
 ## License · 许可

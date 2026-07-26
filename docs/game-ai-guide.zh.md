@@ -4,12 +4,12 @@
 
 > 下文每一种类型都有可直接运行的配套代码，位于 [`../samples`](../samples)。
 
-> 📖 **想要完整的“书籍版”？** 本页是简明指南。完整的图文教程书——含
+> 📖 **想要完整的“书籍版”？** 本页是简明指南。完整的图文教程书**已有中文版**——含
 > **马力欧卡丁车与 GT 赛车 Sophy、Doom / F.E.A.R. / 彩虹六号 / Apex、
-> 文明 / 红色警戒 / 星际争霸** 等类型的深入剖析，以及 minimax、MCTS、GOAP、
-> 影响力图、练习与术语表——目前为英文版：
-> **[Game AI: From Pac-Man to GT Sophy](game-ai-book.en.md)**
-> （另有 [Word 文档](game-ai-book.docx)）。
+> 文明 / 红色警戒 / 星际争霸、以及 GTA 开放世界（NPC 设计、流式加载、LOD AI 与性能预算）**
+> 等类型的深入剖析，另有 minimax、MCTS、GOAP、影响力图、练习与术语表：
+> **[《游戏 AI：从吃豆人到 GT 赛车 Sophy》](game-ai-book.zh.md)**
+> （另有 [Word 文档](game-ai-book.zh.docx)；[英文版](game-ai-book.en.md)）。
 
 ---
 
