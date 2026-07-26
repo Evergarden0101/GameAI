@@ -19,6 +19,8 @@ unity/
 │   ├── EnvironmentBuilder.cs       ← builds camera+floor+agent+target on Play
 │   ├── HumanFeedback.cs            ← press + / - to shape learning during training
 │   └── SentisInference.cs          ← run a trained .onnx in pure C#
+├── Assets/Editor/
+│   └── DemoRecorderMenu.cs         ← "RollerBall ▸ Record Demonstrations" menu toggle
 └── config/
     ├── roller_config.yaml          ← PPO (pure RL)
     └── roller_imitation_config.yaml← BC + GAIL (learn from your demonstrations)
@@ -55,15 +57,19 @@ Those presses call `AddReward()` on the **same signal PPO optimizes**, so your f
 directly shapes the learned policy (a simple TAMER / RLHF-style loop). Watch progress in
 TensorBoard: `tensorboard --logdir results`.
 
-## 3. Or learn from your demonstrations (imitation)
+## 3. Or learn from your demonstrations (imitation) — recording is wired in
 
-The other way to inject human input into training:
+The other way to inject human input into training. Recording is **turn-key** here — no
+components to add by hand:
 
-1. Select the agent at Play-time (or add it in `EnvironmentBuilder`), add a
-   **Demonstration Recorder** component, tick **Record**, set a name, set **Behavior
-   Type = Heuristic Only**, press Play and drive with **WASD**.
-2. It saves `Assets/Demonstrations/RollerBall.demo`.
-3. Train with `config/roller_imitation_config.yaml` (adds **Behavioral Cloning + GAIL**):
+1. In the Unity menu bar, click **RollerBall ▸ Record Demonstrations (WASD)** so it's
+   checked. (`DemoRecorderMenu.cs` adds this; `EnvironmentBuilder` reads it and attaches
+   a **Demonstration Recorder** + switches the agent to Heuristic on Play.)
+2. Press **Play**, drive the ball to the target with **WASD** for a minute — the HUD
+   shows **● RECORDING** — then **Stop Play**. It saves
+   `Assets/Demonstrations/RollerBall.demo`.
+3. Un-check the menu toggle, then train with `config/roller_imitation_config.yaml`
+   (adds **Behavioral Cloning + GAIL**):
    `mlagents-learn config/roller_imitation_config.yaml --run-id=roller_imit01`.
 
 ## 4. Run the trained model in-game (inference, no Python)

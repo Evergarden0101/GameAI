@@ -17,7 +17,8 @@ using UnityEngine;
 
 public class HumanFeedback : MonoBehaviour
 {
-    [HideInInspector] public Agent agent;         // set by EnvironmentBuilder
+    [HideInInspector] public Agent agent;          // set by EnvironmentBuilder
+    [HideInInspector] public bool recording;       // true while capturing a demo
     public float rewardAmount = 0.5f;
     public bool active = true;
 
@@ -26,7 +27,7 @@ public class HumanFeedback : MonoBehaviour
 
     void Update()
     {
-        if (agent == null) return;
+        if (agent == null || recording) return;    // no reward-shaping while recording
 
         if (Input.GetKeyDown(KeyCode.H)) active = !active;
         if (!active) return;
@@ -47,10 +48,22 @@ public class HumanFeedback : MonoBehaviour
         lastPulse = Time.time;
     }
 
-    // Simple in-game HUD so the feedback keys are discoverable while training.
+    // Simple in-game HUD so the feedback keys (or record state) are discoverable.
     void OnGUI()
     {
         var style = new GUIStyle(GUI.skin.label) { fontSize = 14 };
+
+        if (recording)
+        {
+            GUI.color = (Time.time % 1f < 0.5f) ? Color.red : Color.white;
+            GUILayout.BeginArea(new Rect(12, 12, 520, 60));
+            GUILayout.Label("● RECORDING DEMO — drive with WASD; Stop Play to save " +
+                            "Assets/Demonstrations/RollerBall.demo", style);
+            GUILayout.EndArea();
+            GUI.color = Color.white;
+            return;
+        }
+
         GUI.color = active ? Color.white : Color.gray;
         GUILayout.BeginArea(new Rect(12, 12, 420, 120));
         GUILayout.Label($"HUMAN FEEDBACK  [{(active ? "ON" : "OFF")}]  (H to toggle)", style);

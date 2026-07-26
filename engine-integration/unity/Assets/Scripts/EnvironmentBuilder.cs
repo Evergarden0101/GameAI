@@ -10,6 +10,7 @@
 
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 
@@ -61,25 +62,48 @@ public static class EnvironmentBuilder
         bp.BrainParameters.VectorObservationSize = 8;
         bp.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(2);
 
-        // INFERENCE: if a trained model is dropped in Assets/Resources/RollerBall.onnx,
-        // load it and switch to inference-only (no Python). Otherwise stays "Default"
-        // so it connects to the trainer, or falls back to Heuristic.
-        var model = Resources.Load<Unity.Sentis.ModelAsset>("RollerBall");
-        if (model != null)
-        {
-            bp.Model = model;
-            bp.BehaviorType = BehaviorType.InferenceOnly;
-            Debug.Log("[RollerBall] Loaded trained model — running inference.");
-        }
-
         var agent = agentGO.AddComponent<RollerAgent>();
         agent.target = target.transform;
 
         var dr = agentGO.AddComponent<DecisionRequester>();
         dr.DecisionPeriod = 5;
 
-        // HUMAN FEEDBACK during training (see HumanFeedback.cs).
-        agentGO.AddComponent<HumanFeedback>().agent = agent;
+        var human = agentGO.AddComponent<HumanFeedback>();
+        human.agent = agent;
+
+        // Is "Record Demonstrations" turned on in the RollerBall editor menu?
+        bool recordMode = false;
+#if UNITY_EDITOR
+        recordMode = UnityEditor.EditorPrefs.GetBool("RollerBall.RecordDemo", false);
+#endif
+
+        if (recordMode)
+        {
+            // RECORD MODE: the human drives with WASD and every step is captured to a
+            // .demo file for imitation learning. Set Heuristic so the human is in
+            // control, and attach the Demonstration Recorder.
+            bp.BehaviorType = BehaviorType.HeuristicOnly;
+            var rec = agentGO.AddComponent<DemonstrationRecorder>();
+            rec.Record = true;
+            rec.DemonstrationName = "RollerBall";      // -> Assets/Demonstrations/RollerBall.demo
+            rec.NumStepsToRecord = 0;                  // record until you Stop Play
+            human.recording = true;                    // HUD shows REC; disables +/- shaping
+            Debug.Log("[RollerBall] RECORD MODE — drive with WASD, then STOP Play to save " +
+                      "Assets/Demonstrations/RollerBall.demo");
+        }
+        else
+        {
+            // INFERENCE: if a trained model is in Assets/Resources/RollerBall.onnx, load
+            // it and run inference-only (no Python). Otherwise stays "Default" so it
+            // connects to the trainer, or falls back to Heuristic.
+            var model = Resources.Load<Unity.Sentis.ModelAsset>("RollerBall");
+            if (model != null)
+            {
+                bp.Model = model;
+                bp.BehaviorType = BehaviorType.InferenceOnly;
+                Debug.Log("[RollerBall] Loaded trained model — running inference.");
+            }
+        }
     }
 
     static void Tint(GameObject go, Color c)

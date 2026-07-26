@@ -3,10 +3,10 @@
 # The other form of human input during training: instead of shaping reward live, you
 # RECORD yourself playing and the trainer learns to imitate you.
 #
-# 1) Add a Demonstration Recorder component to the agent, tick "Record", set a name,
-#    set Behavior Type = "Heuristic Only", press Play and drive with WASD for a while.
-#    (Component: Unity.MLAgents.Demonstrations.DemonstrationRecorder — see README.)
-# 2) It writes Assets/Demonstrations/RollerBall.demo
+# 1) In the Unity menu bar, enable  RollerBall > Record Demonstrations (WASD)  — this is
+#    wired in for you (EnvironmentBuilder attaches a Demonstration Recorder and switches
+#    the agent to Heuristic). Press Play, drive with WASD for a minute, then STOP Play.
+# 2) It writes Assets/Demonstrations/RollerBall.demo (turn the menu toggle back off after).
 # 3) Train with this config, which adds Behavioral Cloning (BC) + GAIL on top of PPO:
 #      mlagents-learn config/roller_imitation_config.yaml --run-id=roller_imit01
 #
