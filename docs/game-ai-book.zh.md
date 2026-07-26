@@ -56,6 +56,9 @@
 19. 术语表
 20. 延伸阅读
 
+**附录**
+- A. 在引擎里训练 AI——Unity ML-Agents 与 Unreal Learning Agents
+
 ---
 
 # 第一部分——基础
@@ -670,4 +673,43 @@ Q(s,a) ← Q(s,a) + α · [ r + γ · maxₐ' Q(s',a') − Q(s,a) ]
 
 ---
 
-*全书完。所引用的全部代码位于 [`../samples`](../samples)；简明双语指南在[这里（英文）](game-ai-guide.en.md)与[这里（中文）](game-ai-guide.zh.md)。作为 [GameAI](../README.md) 仓库的教学配套而作。*
+# 附录 A——在引擎里训练 AI（Unity ML-Agents 与 Unreal Learning Agents）
+
+第四部分的学习式技术——尤其是强化学习——引出一个显然的问题：示例用 Python 训练，但游戏用 **C#**（Unity）或 **C++**（Unreal）发布。一个模型是如何*用一款游戏*来训练、再*在其中*运行的？本附录回答这个问题，参考代码位于 [`../engine-integration`](../engine-integration)。
+
+### 游戏即环境
+
+训练一个智能体，是**智能体**与**环境**之间的一个循环——而在游戏里，*游戏就是环境*。你必须定义四件事——**智能体契约**——它们在每个框架里都一样：
+
+- **观测（Observations）**——智能体感知什么（一个状态向量：我的位置、目标、我的速度……）。只放公平、可观测的信息。
+- **动作（Actions）**——它能做什么（如一个二维移动力；离散的按键）。
+- **奖励（Reward）**——定义“好”的标量（到达目标 +1，微小的时间惩罚，掉下去为 0）。
+- **重置（Reset）**——如何开始新回合（重新放置智能体与目标）。
+
+训练把这个循环跑上百万次；一个**策略**（神经网络）逐渐学会选择最大化奖励的动作。然后你**冻结**网络，在上线游戏里每帧只运行 `观测 → 动作`。最后这一步——推理——只是一次快速前向传播；所有学习都发生在离线阶段。
+
+### Unity——ML-Agents（Python 训练，C# 运行）
+
+Unity 的 **ML-Agents 工具包**有两半。在游戏内你写一个 C# `Agent` 子类，重写 `CollectObservations()`、`OnActionReceived()`（在这里也调用 `AddReward()` / `EndEpisode()`）与 `OnEpisodeBegin()`——这*就是*上面的智能体契约。训练由一个**外部 Python 进程**驱动（`mlagents-learn config.yaml`，基于 PyTorch 的 PPO），它通过 socket 连接 Unity：接收观测、返回动作、接收奖励，并在场景的众多并行副本上更新网络。它导出一个 `.onnx` 文件。
+
+要**在游戏内运行**它有两种方式，都是纯 C#、运行时无需 Python：（1）把 `.onnx` 赋给智能体的 **Behavior Parameters → Model** 并设为 **Inference Only**——*同一个*智能体脚本照常运行，由 **Unity Sentis**（前身 Barracuda）来评估网络；或（2）你自己用 Sentis 加载 `.onnx` 并在自己的代码里做前向传播（这也是运行一个纯 PyTorch 训练模型的方式）。见 `engine-integration/unity/`。
+
+### Unreal——Learning Agents（引擎内训练）+ NNE（推理）
+
+Unreal 的 **Learning Agents** 插件走的是另一条路：训练用 C++ **在引擎内部**运行——*没有外部 Python 训练器*。你写一个 **Interactor**（定义观测与动作）、一个 **Trainer**（定义奖励与完成）、以及一个 **Policy**（网络）；每个引擎 tick 推进一步 PPO，通常把游戏加速并让许多智能体并行。推理时你去掉训练器，只跑 Interactor + Policy。另外，Unreal 的 **NNE（神经网络引擎）**在运行时加载并运行任意 **ONNX** 模型（Unity Sentis 的对应物）——因此一个 Python 训练的模型也能在 Unreal 游戏里运行。见 `engine-integration/unreal/`。*（Learning Agents 是实验性的，其 API 在不同引擎版本间会变。）*
+
+### 一览
+
+| | Unity ML-Agents | Unreal Learning Agents |
+|---|---|---|
+| 你写什么 | C# 智能体 + YAML | C++ / 蓝图 |
+| 训练在哪运行 | 外部 Python（PyTorch） | 引擎内（C++ PPO） |
+| 游戏内运行模型 | Sentis（原 Barracuda） | NNE |
+| 运行 Python 训练的 ONNX | 是（Sentis） | 是（NNE） |
+| 成熟度 | 稳定、广泛使用 | 实验性 |
+
+全书的主线最后再回响一次：*算法*才是真正的内容；*语言*只是交付方式的选择——用 Python 学它，用 C#/C++ 发布它，以及（如本仓库的交互实验室）用 JavaScript 演示它。
+
+---
+
+*全书完。可运行的算法代码位于 [`../samples`](../samples)；引擎集成参考代码在 [`../engine-integration`](../engine-integration)；简明双语指南在[这里（英文）](game-ai-guide.en.md)与[这里（中文）](game-ai-guide.zh.md)。作为 [GameAI](../README.md) 仓库的教学配套而作。*

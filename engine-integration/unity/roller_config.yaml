@@ -1,0 +1,40 @@
+# roller_config.yaml — Unity ML-Agents training configuration (PPO)
+# --------------------------------------------------------------------
+# You do NOT write the training loop yourself. You describe the algorithm and its
+# hyperparameters here, then run:
+#
+#     pip install mlagents            # the Python (PyTorch) training side
+#     mlagents-learn roller_config.yaml --run-id=roller01
+#     # ...then press Play in the Unity Editor when it says "Start training..."
+#
+# The Python process (PPO on PyTorch) connects to Unity over a socket, receives
+# observations, sends back actions, receives rewards, and updates the network —
+# across many parallel copies of the environment for speed. When it finishes it
+# writes:  results/roller01/RollerBall.onnx
+#
+# That .onnx is the trained brain. Drag it onto the agent's Behavior Parameters
+# "Model" slot and set Behavior Type = Inference Only to run it in-game (no Python).
+
+behaviors:
+  RollerBall:                     # must match the "Behavior Name" on the agent
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 1024
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      beta: 5.0e-3                # entropy — encourages exploration
+      epsilon: 0.2               # PPO clip range
+      lambd: 0.95                # GAE lambda
+      num_epoch: 3
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: true
+      hidden_units: 128
+      num_layers: 2
+    reward_signals:
+      extrinsic:
+        gamma: 0.99              # discount on future reward
+        strength: 1.0
+    max_steps: 500000
+    time_horizon: 64
+    summary_freq: 10000          # TensorBoard logging cadence

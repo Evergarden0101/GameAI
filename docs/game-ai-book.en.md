@@ -56,6 +56,9 @@ Each technique chapter follows the same rhythm: **the idea → how it works → 
 19. Glossary
 20. Further Reading
 
+**Appendix**
+- A. Training AI Inside the Engine — Unity ML-Agents & Unreal Learning Agents
+
 ---
 
 # Part I — Foundations
@@ -692,6 +695,45 @@ Work these against the companion code in [`../samples`](../samples).
 
 ---
 
-*End of book. All code referenced lives in [`../samples`](../samples); the concise bilingual guides are [here (EN)](game-ai-guide.en.md) and [here (中文)](game-ai-guide.zh.md). Built as an educational companion to the [GameAI](../README.md) repository.*
+# Appendix A — Training AI Inside the Engine (Unity ML-Agents & Unreal Learning Agents)
+
+The learned techniques in Part IV — reinforcement learning especially — raise an obvious question: the samples train in Python, but games ship in **C#** (Unity) or **C++** (Unreal). How does a model get trained *using a game* and then *run inside* one? This appendix answers that, and reference code lives in [`../engine-integration`](../engine-integration).
+
+### The game is the environment
+
+Training an agent is a loop between an **agent** and an **environment** — and in a game, *the game is the environment*. You must define four things — the **agent contract** — and they are the same in every framework:
+
+- **Observations** — what the agent senses (a state vector: my position, the goal, my velocity…). Keep it to fair, observable information.
+- **Actions** — what it can do (e.g. a 2-D move force; discrete button presses).
+- **Reward** — the scalar that defines "good" (+1 for reaching the goal, a small time penalty, 0 for falling off).
+- **Reset** — how to start a fresh episode (reposition the agent and goal).
+
+Training runs this loop millions of times; a **policy** (a neural network) gradually learns to pick actions that maximize reward. Then you **freeze** the network and, in the shipping game, run only `observation → action` every tick. That final step — inference — is just a fast forward pass; all the learning happened offline.
+
+### Unity — ML-Agents (train in Python, run in C#)
+
+Unity's **ML-Agents Toolkit** has two halves. In-game you write a C# `Agent` subclass overriding `CollectObservations()`, `OnActionReceived()` (where you also call `AddReward()` / `EndEpisode()`), and `OnEpisodeBegin()` — that *is* the agent contract above. Training is driven by an **external Python process** (`mlagents-learn config.yaml`, PPO on PyTorch) that connects to Unity over a socket: it receives observations, returns actions, receives rewards, and updates the network across many parallel copies of the scene. It exports a `.onnx` file.
+
+To **run it in-game** you have two options, both C#-only with no Python at runtime: (1) assign the `.onnx` to the agent's **Behavior Parameters → Model** and set **Inference Only** — the *same* agent script now runs, with **Unity Sentis** (formerly Barracuda) evaluating the network; or (2) load the `.onnx` yourself with Sentis and run the forward pass in your own code (this is also how you run a model trained in plain PyTorch). See `engine-integration/unity/`.
+
+### Unreal — Learning Agents (train in-engine) + NNE (inference)
+
+Unreal's **Learning Agents** plugin takes a different path: training runs **inside the engine** in C++ — there is *no external Python trainer*. You write an **Interactor** (defines observations and actions), a **Trainer** (defines reward and completion), and a **Policy** (the network); each engine tick advances a PPO step, usually with the game sped up and many agents in parallel. At inference time you drop the trainer and run just the Interactor + Policy. Separately, Unreal's **NNE (Neural Network Engine)** loads and runs any **ONNX** model at runtime (the analog of Unity Sentis) — so a model trained in Python can run in an Unreal game too. See `engine-integration/unreal/`. *(Learning Agents is experimental; its API changes between engine versions.)*
+
+### At a glance
+
+| | Unity ML-Agents | Unreal Learning Agents |
+|---|---|---|
+| You write | C# agent + YAML | C++ / Blueprint |
+| Training runs | External Python (PyTorch) | In-engine (C++ PPO) |
+| Run a model in-game | Sentis (ex-Barracuda) | NNE |
+| Run a Python-trained ONNX | Yes (Sentis) | Yes (NNE) |
+| Maturity | Stable, widely used | Experimental |
+
+The throughline of this whole book returns one last time: the *algorithm* is the real content; the *language* is a delivery choice — Python to learn it, C#/C++ to ship it, and (as in this repo's interactive lab) JavaScript to demo it.
+
+---
+
+*End of book. Runnable algorithm code lives in [`../samples`](../samples); engine integration reference code in [`../engine-integration`](../engine-integration); the concise bilingual guides are [here (EN)](game-ai-guide.en.md) and [here (中文)](game-ai-guide.zh.md). Built as an educational companion to the [GameAI](../README.md) repository.*
 
 

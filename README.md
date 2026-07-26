@@ -70,6 +70,18 @@ squad (line-of-sight / cover / suppression / flanking) · RTS skirmish
 See [`samples/README.md`](samples/README.md) for the full table and run commands.
 完整列表与运行命令见 [`samples/README.md`](samples/README.md)。
 
+## ⚙️ Engine integration · 引擎集成
+
+The samples teach the *algorithms* in Python; [`engine-integration/`](engine-integration)
+shows how the *learned* ones plug into real engines — **train a model with a game
+environment, then run it in-game** — with reference code for both **Unity ML-Agents**
+(C# agent, PPO config, Sentis inference) and **Unreal Learning Agents** (C++ interactor/
+trainer, NNE inference). Narrative version: **Appendix A** of the book.
+
+示例用 Python 讲算法；[`engine-integration/`](engine-integration) 展示学习式方法如何接入
+真实引擎——**用游戏环境训练模型，再在游戏中运行**——含 **Unity ML-Agents** 与
+**Unreal Learning Agents** 的参考代码。叙述版见教程书**附录 A**。
+
 ### Quick start · 快速开始
 
 ```bash
@@ -101,6 +113,9 @@ GameAI/
 │   └── game-ai-guide.zh.md         ← 简明指南（中文）
 ├── scripts/
 │   └── md_to_docx.py               ← rebuilds the .docx from the Markdown
+├── engine-integration/            # how learned AI ships in real engines
+│   ├── unity/                      # ML-Agents (C#) + Sentis inference + PPO config
+│   └── unreal/                     # Learning Agents (C++) + NNE inference
 └── samples/
     ├── classic/                    # pacman_ghosts, minimax, mcts, goap
     ├── npc/                        # state machine + behavior tree
